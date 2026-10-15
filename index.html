@@ -490,7 +490,7 @@ let curLoc=-1;
 function setLoc(i){
   curLoc=i;const l=LOCS[i];
   document.querySelectorAll('.loc').forEach(b=>b.classList.toggle('on',+b.dataset.i===i));
-  document.getElementById('gmap').src='https://www.google.com/maps?q='+encodeURIComponent(l.q)+'&z=15&hl=pt-BR&output=embed';
+  document.getElementById('gmap').src='https://www.google.com/maps/embed?origin=mfe&pb=!1m3!2m1!1s'+encodeURIComponent(l.q)+'!6i15&hl=pt-BR';
   document.getElementById('plname').textContent=l.n;
   document.getElementById('plend').textContent=l.e;
   document.getElementById('plpor').textContent=l.por;
