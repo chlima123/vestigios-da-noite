@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Os vestígios da noite — dossiê navegável</title>
+<style>
+:root{
+ --bg:#0a0c11;--panel:#12161d;--panel2:#171c25;--panel3:#1d2430;--line:#242c39;
+ --ink:#e9edf4;--dim:#9aa6b8;--muted:#6d7a8d;--amber:#d8a340;--amber2:#f2c877;
+ --red:#e0617b;--green:#4fb98a;--blue:#6ea8fe;--purple:#a78bfa;
+ --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+ --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;
+ --mono:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+ -webkit-font-smoothing:antialiased}
+a{color:var(--amber2)}
+header.top{padding:44px 40px 26px;border-bottom:1px solid var(--line);
+ background:
+  radial-gradient(1200px 400px at 12% -10%,rgba(216,163,64,.10),transparent 60%),
+  radial-gradient(900px 320px at 92% 0%,rgba(110,168,254,.08),transparent 60%),#0c1016;}
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--amber);
+ display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--amber);display:inline-block}
+h1{font-family:var(--serif);font-size:clamp(30px,4.6vw,52px);line-height:1.06;margin:16px 0 10px;font-weight:600;letter-spacing:-.01em}
+.sub{font-family:var(--serif);font-size:clamp(15px,1.6vw,19px);color:var(--dim);max-width:900px;line-height:1.5;font-style:italic}
+.byline{margin-top:18px;font-family:var(--mono);font-size:12px;color:var(--muted);line-height:1.9}
+.byline b{color:var(--dim);font-weight:500}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px;margin-top:30px}
+.kpi{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.kpi b{display:block;font-family:var(--serif);font-size:30px;color:var(--amber2);line-height:1.1}
+.kpi span{display:block;font-size:12.5px;color:var(--ink);margin-top:6px;font-weight:600;letter-spacing:.01em}
+.kpi i{display:block;font-size:11.5px;color:var(--muted);margin-top:7px;font-style:normal;line-height:1.45}
+nav.tabs{position:sticky;top:0;z-index:30;display:flex;gap:6px;flex-wrap:wrap;padding:12px 40px;
+ background:rgba(10,12,17,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav.tabs button{background:transparent;border:1px solid transparent;color:var(--dim);font-family:var(--sans);
+ font-size:13.5px;padding:8px 14px;border-radius:999px;cursor:pointer;transition:.15s}
+nav.tabs button:hover{color:var(--ink);background:var(--panel2)}
+nav.tabs button.active{background:var(--amber);color:#14100a;font-weight:600;border-color:var(--amber)}
+main{padding:34px 40px 90px;max-width:1440px;margin:0 auto}
+section{display:none;animation:fade .25s ease}
+section.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+h2.sec{font-family:var(--serif);font-size:27px;margin:0 0 6px;font-weight:600}
+p.lead{color:var(--dim);font-size:14.5px;line-height:1.7;max-width:1000px;margin:0 0 22px}
+.two{display:grid;grid-template-columns:1.25fr .85fr;gap:26px;align-items:start}
+@media(max-width:1000px){.two{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px 24px}
+.card h3{margin:0 0 12px;font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--amber);font-family:var(--mono);font-weight:600}
+.prose p{font-size:15px;line-height:1.75;color:var(--ink);margin:0 0 14px}
+.prose p.dim{color:var(--dim);font-size:14px}
+blockquote.nota{margin:0;padding:16px 18px;background:var(--panel2);border-left:3px solid var(--red);border-radius:0 10px 10px 0;
+ font-family:var(--serif);font-size:15.5px;line-height:1.6;color:var(--ink)}
+blockquote.nota small{display:block;margin-top:10px;font-family:var(--sans);font-size:12px;color:var(--muted);font-style:normal}
+ul.clean{list-style:none;padding:0;margin:0}
+ul.clean li{padding:9px 0;border-bottom:1px dashed var(--line);font-size:13.5px;color:var(--dim);line-height:1.6}
+ul.clean li:last-child{border-bottom:none}
+ul.clean li b{color:var(--ink);font-weight:600}
+/* ------------------------- timeline */
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 8px}
+.chip{background:var(--panel2);border:1px solid var(--line);color:var(--dim);border-radius:999px;
+ padding:6px 12px;font-size:12.5px;cursor:pointer;font-family:var(--mono)}
+.chip:hover{color:var(--ink);border-color:var(--amber)}
+.chip.on{background:rgba(216,163,64,.16);border-color:var(--amber);color:var(--amber2)}
+.toolbar{display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-bottom:16px}
+.count{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.day{margin:26px 0 0}
+.dayhead{position:sticky;top:59px;z-index:12;background:linear-gradient(90deg,#0a0c11 72%,rgba(10,12,17,0));
+ padding:7px 0;font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber)}
+.rail{position:relative;border-left:1px solid var(--line);margin-left:7px;padding:6px 0 6px 0}
+.tl{display:grid;grid-template-columns:64px 1fr;gap:14px;padding:9px 0 9px 18px;position:relative}
+.tl:before{content:"";position:absolute;left:-4.5px;top:16px;width:8px;height:8px;border-radius:50%;
+ background:var(--panel3);border:1px solid var(--line)}
+.tl.v:before{background:var(--amber);border-color:var(--amber2)}
+.tl.o:before{background:#2b3546;border-color:#3d4a5e}
+.tl.ev:before{background:var(--blue);border-color:var(--blue);border-radius:2px;transform:rotate(45deg)}
+.tl.master:before{background:var(--purple);border-color:var(--purple);border-radius:2px;transform:rotate(45deg)}
+.tl.alerta:before{background:var(--red);border-color:var(--red);border-radius:2px;transform:rotate(45deg)}
+.tl.imprensa:before{background:#c9ccd3;border-color:#fff;border-radius:2px;transform:rotate(45deg)}
+.tl .h{font-family:var(--mono);font-size:12px;color:var(--muted);padding-top:2px}
+.tl .b{min-width:0}
+.tl .who{font-size:12px;font-family:var(--mono);color:var(--dim);margin-bottom:3px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tl .who .nm{color:var(--amber2)}
+.tl .tx{font-size:14.5px;line-height:1.6;color:var(--ink);word-wrap:break-word}
+.tl .tx .arr{color:var(--muted)}
+.tl.evrow .tx,.tl.master .tx,.tl.alerta .tx,.tl.imprensa .tx{font-family:var(--serif);font-size:15.5px;color:#dfe5ee}
+.tl .ett{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:4px}
+.tl.master .ett{color:var(--purple)} .tl.alerta .ett{color:var(--red)} .tl.imprensa .ett{color:#c9ccd3}
+.tagpill{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid currentColor}
+/* ------------------------- organograma */
+.org{margin-top:8px}
+.root{max-width:620px;margin:0 auto;text-align:center;background:linear-gradient(180deg,#1c2330,#141922);
+ border:1px solid var(--amber);border-radius:14px;padding:20px 24px;box-shadow:0 0 0 6px rgba(216,163,64,.05)}
+.root .rn{font-family:var(--serif);font-size:24px;color:var(--amber2)}
+.root .rr{font-family:var(--mono);font-size:12px;color:var(--dim);margin-top:6px}
+.root .rd{font-size:13.5px;color:var(--dim);margin-top:10px;line-height:1.6}
+.stem{width:2px;height:24px;background:var(--line);margin:0 auto}
+.bus{height:2px;background:var(--line);margin:0 9%}
+.org-cols{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:0}
+@media(max-width:1180px){.org-cols{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.org-cols{grid-template-columns:1fr}.bus{margin:0 30%}}
+.org-col{position:relative;padding-top:22px}
+.org-col:before{content:"";position:absolute;top:0;left:50%;width:2px;height:22px;background:var(--line)}
+.org-col>h4{margin:0 0 4px;font-size:14px;color:var(--ink);letter-spacing:.02em}
+.org-col>h4 span.ic{margin-right:6px}
+.org-col>.sub{font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:12px}
+.pcard{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:13px 15px;margin-bottom:10px;border-left:3px solid var(--pc,#7f8ea3)}
+.pcard .pn{font-size:14px;font-weight:600;color:var(--ink);display:flex;gap:8px;align-items:baseline;justify-content:space-between;flex-wrap:wrap}
+.pcard .pr{font-size:11.5px;font-family:var(--mono);color:var(--muted);margin-top:3px}
+.pcard .pt{font-size:13px;color:var(--dim);line-height:1.55;margin-top:8px}
+.pcard .pe{font-size:12.5px;color:#cbb37a;line-height:1.5;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+.arena-head{margin:40px 0 4px;font-family:var(--serif);font-size:21px}
+.arena-sub{font-size:12.5px;color:var(--muted);margin-bottom:14px;max-width:900px;line-height:1.6}
+.arena-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+/* ------------------------- mapa */
+.mapwrap{display:grid;grid-template-columns:352px 1fr;gap:20px;align-items:start}
+@media(max-width:940px){.mapwrap{grid-template-columns:1fr}}
+.maplist{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;max-height:660px;overflow-y:auto}
+.maplist h5{margin:12px 0 8px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber)}
+.maplist h5:first-child{margin-top:0}
+.loc{display:block;width:100%;text-align:left;background:var(--panel2);border:1px solid var(--line);border-radius:9px;
+ padding:9px 12px;margin-bottom:7px;cursor:pointer;color:var(--dim);font-size:13px;font-family:var(--sans)}
+.loc:hover{border-color:var(--amber);color:var(--ink)}
+.loc.on{background:rgba(216,163,64,.14);border-color:var(--amber);color:var(--amber2)}
+.loc small{display:block;font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:3px}
+.mapframe iframe{width:100%;height:430px;border:1px solid var(--line);border-radius:14px;background:#0e1219;display:block}
+.placebox{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-top:14px}
+.placebox .pt{font-family:var(--serif);font-size:19px;color:var(--ink)}
+.placebox .pe{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:5px}
+.placebox .pp{font-size:14px;color:var(--dim);line-height:1.65;margin-top:11px}
+.placebox a.btn{display:inline-block;margin-top:12px;font-family:var(--mono);font-size:12px;border:1px solid var(--amber);
+ color:var(--amber2);padding:7px 13px;border-radius:999px;text-decoration:none}
+.placebox a.btn:hover{background:rgba(216,163,64,.14)}
+/* ------------------------- mensagens */
+.searchbar{display:flex;gap:10px;align-items:center;margin-bottom:18px;flex-wrap:wrap}
+.searchbar input{flex:1;min-width:240px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;
+ padding:11px 14px;color:var(--ink);font-size:14px;font-family:var(--sans)}
+.searchbar input:focus{outline:none;border-color:var(--amber)}
+.convs{display:grid;grid-template-columns:repeat(auto-fit,minmax(375px,1fr));gap:16px}
+.conv{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.conv header{padding:14px 16px;border-bottom:1px solid var(--line);background:var(--panel2)}
+.conv header .cn{font-size:14.5px;font-weight:600;color:var(--ink)}
+.conv header .cr{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:4px}
+.conv .msgs{max-height:560px;overflow-y:auto;padding:12px 14px}
+.m{margin-bottom:11px;max-width:96%}
+.m .mt{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-bottom:3px}
+.m .mtt{padding:9px 12px;border-radius:10px;font-size:13.5px;line-height:1.55}
+.m.o .mtt{background:var(--panel3);color:var(--ink);border-top-left-radius:3px}
+.m.v .mtt{background:rgba(216,163,64,.14);color:#f3e3c4;border-top-right-radius:3px;margin-left:auto}
+.m.v{display:flex;flex-direction:column;align-items:flex-end;margin-left:auto}
+.m.f .mtt{border:1px dashed var(--line);color:var(--dim);font-style:italic}
+table.desp{width:100%;border-collapse:collapse;margin-top:6px}
+table.desp td{padding:10px 6px;border-bottom:1px solid var(--line);font-size:13.5px;color:var(--dim)}
+table.desp td.v{font-family:var(--mono);color:var(--amber2);text-align:right;white-space:nowrap}
+table.desp td.o{font-size:12.5px;color:var(--muted)}
+table.desp tr:last-child td{border-bottom:none;color:var(--ink);font-weight:600}
+footer{border-top:1px solid var(--line);padding:26px 40px 60px;color:var(--muted);font-size:12.5px;line-height:1.8}
+footer a{color:var(--dim)}
+.meth{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:18px}
+@media print{
+ @page{size:A4 landscape;margin:12mm}
+ body{background:#fff;color:#000}
+ header.top,nav.tabs,.filters,.toolbar,.searchbar,footer,.mapframe iframe{background:#fff!important;color:#000}
+ nav.tabs,.filters,.searchbar{display:none!important}
+ section{display:block!important;page-break-before:always}
+ .card,.pcard,.conv,.kpi,.root{background:#fff!important;border:1px solid #000!important;color:#000!important}
+ .tx,.pt,.pe,.pp,.rd,.rr,.ptxt,.pev{color:#000!important}
+ .convs{grid-template-columns:1fr 1fr}
+ .maplist{max-height:none;overflow:visible}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="eyebrow"><span class="dot"></span> QUESTÕES DESPUDORADAS <span class="dot"></span> dossiê navegável <span class="dot"></span> 15 de outubro de 2026</div>
+  <h1>Os vestígios da noite</h1>
+  <div class="sub">As 125 mensagens que reconstituem a noitada patrocinada por Daniel Vorcaro para o ministro Kassio Nunes Marques</div>
+  <div class="byline"><b>Reportagem:</b> Breno Pires (Brasília), Ana Clara Costa (Rio de Janeiro) e João Batista Jr. (São Paulo) &nbsp;·&nbsp; <b>Fonte:</b> <a href="https://piaui.uol.com.br/web/kassio-vorcaro-triplex-noite/" target="_blank" rel="noopener">revista piauí</a><br>
+   <b>Este painel:</b> leitura estruturada da reportagem — linha do tempo das mensagens, organograma dos envolvidos e mapa dos locais citados. Os textos das mensagens estão transcritos como publicados, com os erros de digitação originais.</div>
+  <div class="kpis">
+    <div class="kpi"><b>125</b><span>mensagens do celular de Vorcaro</span><i>conjunto analisado pela piauí, obtido de aparelho apreendido pela Polícia Federal</i></div>
+<div class="kpi"><b>7</b><span>interlocutores encarregados da noite</span><i>mordomo, chef, 2 motoristas, agenciadora, faxineira e um amigo arquiteto</i></div>
+<div class="kpi"><b>5</b><span>garotas de programa no tríplex</span><i>quarto emprestado pelo mordomo “para ministro com 5 menina”</i></div>
+<div class="kpi"><b>R$ 27 mil</b><span>custo estimado da noite</span><i>R$ 21.121,90 só em compras do chef; com a equipe recrutada, a casa dos 27 mil</i></div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <button data-sec="geral" class="active">Visão geral</button>
+  <button data-sec="tempo">Linha do tempo</button>
+  <button data-sec="org">Organograma</button>
+  <button data-sec="mapa">Mapa dos locais</button>
+  <button data-sec="msgs">Mensagens por conversa</button>
+  <button data-sec="metodo">Método e fontes</button>
+</nav>
+
+<main>
+<!-- ==================== VISÃO GERAL ==================== -->
+<section id="s-geral" class="on">
+  <h2 class="sec">O que aconteceu no tríplex</h2>
+  <p class="lead">Na sexta-feira que antecedeu o Carnaval de 2025 — 28 de fevereiro —, o banqueiro Daniel Vorcaro recebeu em seu tríplex no Itaim Bibi, em São Paulo, um convidado que as mensagens chamam de “ministro”, “kassio” e “KN”. A piauí teve acesso a 125 mensagens do celular de Vorcaro, apreendido pela Polícia Federal, e reconstituiu a noite: o churrasco para 15 pessoas, as cinco mulheres trazidas por uma agenciadora, o quarto emprestado pelo mordomo, a piscina, os vestígios recolhidos antes que a faxineira chegasse. No mesmo dia, o banco do banqueiro usava 1,25 bilhão de reais do compulsório para se manter de pé.</p>
+  <div class="two">
+    <div class="card prose">
+      <h3>Como a noite foi montada</h3>
+      <p>O convite se espalha por três frentes. <b>Newton Ramos</b>, desembargador do TRF-1, começa pela hospedagem: pede ao agente de viagens de Vorcaro um quarto no Hotel Fasano Itaim — hotel do qual o banqueiro era sócio — para “essa sexta a sábado pro KN”. Vorcaro monta a casa: avisa o chef <b>José Maria Meira</b> (“Sexta churrasco animado”), avisa o arquiteto <b>Kiko Sobrinho</b> que “vou receber ministro aqui sexta” e, na véspera às 23h07, define o endereço ao mordomo <b>Michael</b>: às 13h do dia seguinte, na “Leo”, o tríplex da Rua Leopoldo Couto de Magalhães Júnior.</p>
+      <p>A agenciadora <b>Rayanna</b> entra na quinta-feira, 25: “Pode sexta a tarde?”, “Arruma mais 1”. No dia da festa, às 11h52, ela avisa que não vai — mas manda duas mulheres “da minha confiança”, que ela mesma acerta depois. Vorcaro responde às 12h23 com a instrução que atravessa todo o caso: <b>“So lembra que sem celular.”</b> A uma da tarde o endereço é enviado — “Leopoldo [número e andar omitidos], itaim”.</p>
+      <p>A tarde é de operação. O chef compra caviar e trufas: R$ 21.121,90 em compras, R$ 27 mil no total com a equipe. O motorista <b>Gustavo</b> avisa que “começou chegar meninas” às 14h04 e recebe o Ford Fusion preto dos convidados às 14h40. O mordomo abre as janelas (“Abre as janelassss!!!”, “Paredendo enterro”) e reporta que os convidados subiam “reparando bem na localização da sua casa”. Vorcaro escreve a <b>Luiz Rennó</b>, ex-diretor jurídico do Master: <b>“Eu fazendo graça pra ministro em sp.”</b></p>
+      <p class="dim">Depois disso, o banqueiro silencia por mais de cinco horas nas conversas da festa — e passa a tratar da sobrevivência do banco: 800 milhões dentro do compulsório às 16h31, 1,25 bilhão às 20h20, e a ordem de demitir o executivo que trouxe o número às 20h26.</p>
+    </div>
+    <div>
+      <div class="card" style="border-left:3px solid var(--red)">
+        <h3>A noite, em seis momentos</h3>
+        <ul class="clean" id="seis"></ul>
+      </div>
+      <div class="card" style="margin-top:18px">
+        <h3>Quem estava em cada frente</h3>
+        <ul class="clean">
+          <li><b>Convidado da noite</b><br>Kassio Nunes Marques (ministro do STF e presidente do TSE) — nega tudo</li>
+          <li><b>Hospitalidade</b><br>Newton Ramos (desembargador TRF-1) pede o Fasano Itaim para “KN”; Leo Serrano Giunchetti faz a reserva</li>
+          <li><b>As mulheres</b><br>Rayanna intermedeia e depois cobra R$ 10 mil; cinco mulheres passam pelo tríplex</li>
+          <li><b>A casa</b><br>Michael (mordomo), José Maria Meira (chef), Selma, Gustavo e Geraldo (motoristas), Kiko Sobrinho (arquiteto)</li>
+          <li><b>O banco</b><br>Luiz Rennó, Alberto Felix de Oliveira Neto, Angelo Silva, Paulo Sergio Souza, BRB</li>
+        </ul>
+      </div>
+      <div class="card" style="margin-top:18px">
+        <h3>Os números que a reportagem apurou</h3>
+        <ul class="clean">
+          <li><b>125</b> mensagens analisadas, em 8 conversas com 7 interlocutores — 122 de texto e 3 anexos; 62 enviadas por Vorcaro, 63 recebidas</li>
+          <li><b>R$ 21.121,90</b> de compras do chef (R$ 1.772 em carnes; R$ 15.100 em cinco latas de caviar)</li>
+          <li><b>R$ 10 mil</b> cobrados pela amiga que “ficou com o kassio”, pagos por Pix em 07/03</li>
+          <li><b>R$ 6,6 milhões</b> do Master à Consult Inteligência Tributária em 14 operações; <b>R$ 282 mil</b> repassados a Kevin Marques, filho do ministro</li>
+          <li><b>R$ 500 mil/mês</b> de salário pago a Kevin, segundo outras mensagens</li>
+          <li><b>R$ 40 milhões</b> pelo andar do camarote Alma Rio na Sapucaí, na mesma temporada</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== LINHA DO TEMPO ==================== -->
+<section id="s-tempo">
+  <h2 class="sec">Linha do tempo</h2>
+  <p class="lead">As mensagens em ordem cronológica, entrelaçadas com os acontecimentos que a reportagem reconstrói — compras, chegadas, a crise do banco e os desdobramentos públicos do caso. Filtre por interlocutor ou isole as mensagens.</p>
+  <div class="filters" id="filters"></div>
+  <div class="toolbar">
+    <div class="filters">
+      <button class="chip on" id="tog-ctx">Incluir contexto</button>
+      <button class="chip" id="tog-poder">Só com o entorno do ministro</button>
+    </div>
+    <div class="count" id="tlcount"></div>
+  </div>
+  <div id="timeline"></div>
+</section>
+
+<!-- ==================== ORGANOGRAMA ==================== -->
+<section id="s-org">
+  <h2 class="sec">Organograma da noite</h2>
+  <p class="lead">Quem é quem, o que fazia e onde a reportagem documenta a participação de cada um. As setas de cor indicam a função no episódio: <span style="color:#6ea8fe">equipe da casa</span> · <span style="color:#d8a340">intermediação</span> · <span style="color:#e0617b">rede de poder</span> · <span style="color:#a78bfa">núcleo Master</span> · <span style="color:#7f8ea3">arena institucional</span>.</p>
+  <div class="org">
+    <div class="root">
+      <div class="rn">Daniel Vorcaro</div>
+      <div class="rr">BANQUEIRO · BANCO MASTER · ANFITRIÃO, FINANCIADOR E COORDENADOR DA NOITADA</div>
+      <div class="rd">Dono do tríplex e do celular de onde saíram as 125 mensagens. Monta a festa, escala a equipe, define o endereço, ordena o sigilo (“So lembra que sem celular”), administra os quartos e — na mesma tarde — a crise de liquidez do banco. É quem pede a Rayanna “dados e valor” da cobrança de R$ 10 mil.</div>
+    </div>
+    <div class="stem"></div>
+    <div class="bus"></div>
+    <div class="org-cols" id="orgcols"></div>
+    <div class="arena-head" id="arena-h"></div>
+    <div class="arena-sub" id="arena-s"></div>
+    <div class="arena-grid" id="arenagrid"></div>
+  </div>
+</section>
+
+<!-- ==================== MAPA ==================== -->
+<section id="s-mapa">
+  <h2 class="sec">Mapa dos locais citados</h2>
+  <p class="lead">Todos os endereços e territórios que aparecem na reportagem, do tríplex do Itaim Bibi ao camarote da Sapucaí, do compulsório em Brasília à mesa de escritório em Belo Horizonte. Escolha um local à esquerda para carregar o mapa.</p>
+  <div class="mapwrap">
+    <aside class="maplist" id="maplist"></aside>
+    <div>
+      <div class="mapframe">
+        <iframe id="gmap" title="Mapa do local selecionado" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+      </div>
+      <div class="placebox">
+        <div class="pt" id="plname">—</div>
+        <div class="pe" id="plend"></div>
+        <div class="pp" id="plpor"></div>
+        <a class="btn" id="pllink" href="#" target="_blank" rel="noopener">Abrir no Google Maps ↗</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== MENSAGENS ==================== -->
+<section id="s-msgs">
+  <h2 class="sec">Mensagens por conversa</h2>
+  <p class="lead">As oito conversas do celular de Vorcaro que a reportagem reproduz, agrupadas como no aplicativo. Use a busca para achar uma palavra em todas elas. Datas e horas são as do aparelho.</p>
+  <div class="searchbar">
+    <input id="q" type="search" placeholder="Buscar nas mensagens (ex.: ministro, chocolate, quarto, kassio, compulsório…) — atalho: /">
+    <span class="count" id="qcount"></span>
+  </div>
+  <div class="convs" id="convs"></div>
+  <div class="card" style="margin-top:26px">
+    <h3>O custo da noite — relatório de despesas anexado à conversa do chef (27/02, 18h26)</h3>
+    <table class="desp" id="desp"></table>
+  </div>
+</section>
+
+<!-- ==================== MÉTODO ==================== -->
+<section id="s-metodo">
+  <h2 class="sec">Método, fontes e limites</h2>
+  <p class="lead">O que este painel é, de onde vêm os dados e o que ele deliberadamente não faz.</p>
+  <div class="meth">
+    <div class="card prose">
+      <h3>Fonte única e verificação</h3>
+      <p>A totalidade do conteúdo vem de uma peça: <b>“Os vestígios da noite”</b>, de Breno Pires, Ana Clara Costa e João Batista Jr., publicada pela revista piauí em 15 de outubro de 2026 — <a href="https://piaui.uol.com.br/web/kassio-vorcaro-triplex-noite/" target="_blank" rel="noopener">piaui.uol.com.br/web/kassio-vorcaro-triplex-noite</a>.</p>
+      <p>As mensagens foram transcritas <b>como publicadas</b>, preservando os erros de digitação, as abreviações e as expressões originais (“Paredendo enterro”, “Claro Qie sim”, “Vou arrumar”). Não houve correção de português, porque a grafia é parte do registro probatório.</p>
+      <p class="dim">Este painel não é reportagem nova, não acrescenta apuração e não substitui a leitura do original. É uma reconstituição estrutural: onde cada mensagem se encaixa no tempo, quem faz o quê na organização da noite e onde ficam os lugares citados.</p>
+    </div>
+    <div class="card prose">
+      <h3>Limites que o leitor deve saber</h3>
+      <ul class="clean">
+        <li><b>As 125 mensagens são exatamente as da reportagem.</b> Neste painel há <span id="nmsgs"></span> registros — o mesmo conjunto analisado pela piauí: <span id="ntxt"></span> mensagens de texto e <span id="nanx"></span> anexos (duas fotos enviadas pelo mordomo na madrugada e o PDF do relatório de despesas do chef). Vorcaro enviou <span id="nenv"></span> e recebeu <span id="nrec"></span>.</li>
+        <li><b>“Leo” é ambíguo.</b> “Leo” é o apelido do tríplex (Rua Leopoldo Couto de Magalhães Júnior), mas <b>Leo Serrano Giunchetti</b> é o agente de viagens. Onde aparece “leo” nas mensagens do arquiteto, trata-se do imóvel.</li>
+        <li><b>Não se sabe por quanto tempo Vorcaro esteve no imóvel.</b> As mensagens não esclarecem se ele estava lá em parte ou em todo o tempo, embora tenha dado as cartas o tempo todo.</li>
+        <li><b>As mulheres não são identificadas</b> — nem as que chegaram por Rayanna, nem as demais.</li>
+        <li><b>Endereço omitido.</b> O número e o andar do tríplex foram omitidos pela reportagem na mensagem enviada à agenciadora; no mapa, o pin está na rua, não no edifício exato.</li>
+        <li><b>Endereços comerciais e institucionais</b> (Fasano Itaim, deBetti, sede do Master, Consult Inteligência Tributária, STF, TSE, Banco Central, BRB) foram localizados por essas próprias referências públicas e servem de orientação geográfica — não como prova documental da reportagem.</li>
+        <li><b>Conversas do Master com Paulo Sergio Souza, Alberto e Angelo Silva</b> não integram as oito conversas da festa, mas ocorreram nas mesmas horas de 28/02 e por isso aparecem na linha do tempo marcadas como contexto.</li>
+      </ul>
+    </div>
+    <div class="card prose">
+      <h3>O que o ministro diz</h3>
+      <blockquote class="nota">“O ministro Kassio Nunes Marques nunca votou a favor de Daniel Vorcaro (inclusive deu voto pela manutenção da prisão), nunca trocou mensagens com ele e nem pediu nada ao banqueiro. O ministro também nunca autorizou ninguém a falar em nome dele e não pode se responsabilizar por conversas ou ações de terceiros”.
+      <small>Nota enviada pelo ministro Kassio Nunes Marques à revista piauí, reproduzida integralmente na reportagem. A piauí perguntou se ele foi à festa, se houve pagamento a alguma mulher presente, se o episódio compromete sua atuação como relator do caso Master e do pedido de CPI, se deveria reconhecer impedimento e se há condições de seguir como presidente do TSE. A nota não responde a nenhum desses pontos.</small></blockquote>
+    </div>
+    <div class="card prose">
+      <h3>Como este painel foi feito</h3>
+      <ul class="clean">
+        <li>Mensagens, nomes, valores, datas e horas foram extraídos do texto publicado e estruturados em dados; nada foi digitado de memória ou completado por inferência.</li>
+        <li>Cada mensagem guarda remetente, data e hora exatamente como aparecem na reportagem; os eventos de contexto estão marcados com o trecho correspondente.</li>
+        <li>O organograma distingue <b>participação direta</b> (equipe, intermediação, convidado) de <b>personagens citados</b> (arena institucional, imprensa, fiscalização) — não há relação hierárquica real entre eles, só a função de cada um no episódio.</li>
+        <li>Papéis e citações de cada pessoa vêm do texto da reportagem; quando o dado é atribuição ou suspeita (não fato provado), o painel mantém a formulação original (“contato atribuído a”, “segundo outras mensagens”).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div>Painel de leitura gerado a partir de <b>“Os vestígios da noite”</b> — revista piauí, 15/10/2026 — <a href="https://piaui.uol.com.br/web/kassio-vorcaro-triplex-noite/" target="_blank" rel="noopener">artigo original</a>. Todo o conteúdo jornalístico é dos autores e da revista; o painel apenas reorganiza e visualiza o material publicado.</div>
+  <div style="margin-top:8px">Atalhos: <kbd>/</kbd> busca · <kbd>Esc</kbd> limpa · 1–6 troca de seção · o painel imprime em PDF com “Imprimir” do navegador.</div>
+</footer>
+
+<script>
+const MSGS = [{"c": "rayanna", "s": "V", "d": "2025-02-25", "t": "15h42", "x": "Pode sexta a tarde?", "k": "m"}, {"c": "rayanna", "s": "V", "d": "2025-02-25", "t": "15h42", "x": "Arruma mais 1", "k": "m"}, {"c": "rayanna", "s": "O", "d": "2025-02-25", "t": "15h43", "x": "Vai ser aqui sp?", "k": "m"}, {"c": "rayanna", "s": "V", "d": "2025-02-25", "t": "15h46", "x": "Sim", "k": "m"}, {"c": "rayanna", "s": "V", "d": "2025-02-27", "t": "23h08", "x": "Amanha 14", "k": "m"}, {"c": "rayanna", "s": "V", "d": "2025-02-28", "t": "11h32", "x": "Sim ue, mas quem vai trazer", "k": "m"}, {"c": "rayanna", "s": "O", "d": "2025-02-28", "t": "11h52", "x": "Dani eu não vou conseguir ir posso mandar as duas? Eu conheço elas são da minha confiança! Vc vai adorar! Eu mando elas irem e acerto com elas depois pode ser?", "k": "m"}, {"c": "rayanna", "s": "V", "d": "2025-02-28", "t": "12h23", "x": "Pode chamar as duas entao", "k": "m"}, {"c": "rayanna", "s": "V", "d": "2025-02-28", "t": "12h23", "x": "So lembra que sem celular", "k": "m"}, {"c": "rayanna", "s": "O", "d": "2025-02-28", "t": "12h25", "x": "Sabe que não furo e pode contar sempre comigo", "k": "m"}, {"c": "rayanna", "s": "O", "d": "2025-02-28", "t": "13h50", "x": "As meninas estão prontas", "k": "m"}, {"c": "rayanna", "s": "V", "d": "2025-02-28", "t": "13h54", "x": "Leopoldo [número e andar omitidos], itaim", "k": "m"}, {"c": "rayanna", "s": "O", "d": "2025-03-03", "t": "11h43", "x": "Dani bom dia tudo bem ?", "k": "m"}, {"c": "rayanna", "s": "O", "d": "2025-03-07", "t": "13h20", "x": "A minha amiga lá aquele dia ! Deu certo né ?", "k": "m"}, {"c": "rayanna", "s": "O", "d": "2025-03-07", "t": "13h21", "x": "Ela disse que ficou com o kassio!", "k": "m"}, {"c": "rayanna", "s": "O", "d": "2025-03-07", "t": "13h21", "x": "Ela tá me cobrando aqui", "k": "m"}, {"c": "rayanna", "s": "V", "d": "2025-03-07", "t": "13h21", "x": "Me manda aqui", "k": "m"}, {"c": "rayanna", "s": "V", "d": "2025-03-07", "t": "13h21", "x": "Dados e valor", "k": "m"}, {"c": "rayanna", "s": "O", "d": "2025-03-07", "t": "13h21", "x": "10 né!", "k": "m"}, {"c": "rayanna", "s": "O", "d": "2025-03-07", "t": "13h21", "x": "Ela ficou com ele", "k": "m"}, {"c": "selma", "s": "O", "d": "2025-03-01", "t": "08h41", "x": "Bom dia tudo bem? Eu posso folgar segunda e terça? Qualquer coisa eu vou hoje sar uma organizada aí", "k": "m"}, {"c": "selma", "s": "V", "d": "2025-03-01", "t": "08h44", "x": "Nao precisa vir hoje", "k": "m"}, {"c": "selma", "s": "O", "d": "2025-03-01", "t": "08h46", "x": "Eu esqueci de avisar ontem sua carteira deixei dentro da gaveta e a porta do quarto de hospede masculino eu fechei a chave está naquele livro em frente ao seu quarto ok", "k": "m"}, {"c": "michael", "s": "V", "d": "2025-02-27", "t": "23h07", "x": "Amanha as 13 na lwo", "k": "m"}, {"c": "michael", "s": "V", "d": "2025-02-28", "t": "14h45", "x": "Abre as janelassss!!!", "k": "m"}, {"c": "michael", "s": "V", "d": "2025-02-28", "t": "14h45", "x": "Da sala ta tudo fechado", "k": "m"}, {"c": "michael", "s": "V", "d": "2025-02-28", "t": "14h45", "x": "Paredendo enterro", "k": "m"}, {"c": "michael", "s": "O", "d": "2025-02-28", "t": "14h45", "x": "Eu fechei para gela mais to abrindo (respondendo a “Paredendo enterro”)", "k": "m"}, {"c": "michael", "s": "V", "d": "2025-02-28", "t": "14h45", "x": "So antes de convidado ne", "k": "m"}, {"c": "michael", "s": "O", "d": "2025-02-28", "t": "14h49", "x": "Convidado chegou", "k": "m"}, {"c": "michael", "s": "O", "d": "2025-02-28", "t": "14h54", "x": "Seus convidados subiu reparando bem na localização da sua casa e também avaliando o ap. Estão admirados", "k": "m"}, {"c": "michael", "s": "V", "d": "2025-02-28", "t": "20h06", "x": "Vem aqui", "k": "m"}, {"c": "michael", "s": "O", "d": "2025-02-28", "t": "20h26", "x": "Desculpa por da chocolate sem pergunta não vai acontece mais Rapaz de preto esta pedindo mais chocolate eu estou falando que não tem mais. Pois senhor já brigou comigo que não era pra da", "k": "m"}, {"c": "michael", "s": "V", "d": "2025-02-28", "t": "20h26", "x": "Nunca mais faca isso", "k": "m"}, {"c": "michael", "s": "O", "d": "2025-02-28", "t": "20h56", "x": "Emprestei quarto do lado para ministro com 5 menina. Liguei para pedi autorização mais senhor não viu", "k": "m"}, {"c": "michael", "s": "V", "d": "2025-02-28", "t": "21h29", "x": "Claro Qie sim", "k": "m"}, {"c": "michael", "s": "V", "d": "2025-02-28", "t": "21h37", "x": "Sobe", "k": "m"}, {"c": "michael", "s": "V", "d": "2025-02-28", "t": "21h37", "x": "So fecha Meu quarto", "k": "m"}, {"c": "michael", "s": "V", "d": "2025-02-28", "t": "21h37", "x": "E mostra o outro", "k": "m"}, {"c": "michael", "s": "V", "d": "2025-02-28", "t": "21h37", "x": "Se vier o terceiro coloca sala tv", "k": "m"}, {"c": "michael", "s": "O", "d": "2025-02-28", "t": "21h40", "x": "Eles foi fica junto.", "k": "m"}, {"c": "michael", "s": "O", "d": "2025-02-28", "t": "22h08", "x": "Aqui tá tranquilo já pessoal tudo pelado na piscina uma passou mau vomitou mais tá bem já", "k": "m"}, {"c": "michael", "s": "V", "d": "2025-02-28", "t": "22h55", "x": "Pegou toalha pra eles", "k": "m"}, {"c": "michael", "s": "O", "d": "2025-02-28", "t": "22h58", "x": "Ministro tá sem pressa nenhuma de ir embora acabou de fala que está renovando para começa tudo novamente", "k": "m"}, {"c": "michael", "s": "O", "d": "2025-02-28", "t": "23h15", "x": "Ministro se organizando para ir embora já", "k": "m"}, {"c": "michael", "s": "O", "d": "2025-02-28", "t": "23h17", "x": "Indo embora ele", "k": "m"}, {"c": "michael", "s": "O", "d": "2025-02-28", "t": "23h24", "x": "Tô arrumando pra não deixa pra selma essas coisa", "k": "f"}, {"c": "michael", "s": "O", "d": "2025-02-28", "t": "23h27", "x": "Essas menina é artista olha onde achei embaixo do travesseiro", "k": "f"}, {"c": "michael", "s": "O", "d": "2025-02-28", "t": "23h58", "x": "Todos foi embora.", "k": "m"}, {"c": "gustavo", "s": "O", "d": "2025-02-28", "t": "07h48", "x": "Ja estou de volta ok", "k": "m"}, {"c": "gustavo", "s": "O", "d": "2025-02-28", "t": "08h52", "x": "Estou no heritage", "k": "m"}, {"c": "gustavo", "s": "V", "d": "2025-02-28", "t": "09h12", "x": "Saindo", "k": "m"}, {"c": "gustavo", "s": "O", "d": "2025-02-28", "t": "14h04", "x": "Dr, começou chegar meninas", "k": "m"}, {"c": "gustavo", "s": "O", "d": "2025-02-28", "t": "14h04", "x": "Pode liberar?", "k": "m"}, {"c": "gustavo", "s": "V", "d": "2025-02-28", "t": "14h06", "x": "Todas que chegarem", "k": "m"}, {"c": "gustavo", "s": "V", "d": "2025-02-28", "t": "14h06", "x": "Pode subir", "k": "m"}, {"c": "gustavo", "s": "V", "d": "2025-02-28", "t": "14h07", "x": "Oega carro dos homens qdo chegarem", "k": "m"}, {"c": "gustavo", "s": "V", "d": "2025-02-28", "t": "14h07", "x": "Fica embaixo vc e geraldo e acompanha chegada", "k": "m"}, {"c": "gustavo", "s": "O", "d": "2025-02-28", "t": "14h07", "x": "Ok", "k": "m"}, {"c": "gustavo", "s": "O", "d": "2025-02-28", "t": "14h07", "x": "Fica com telefone das meninas?", "k": "m"}, {"c": "gustavo", "s": "V", "d": "2025-02-28", "t": "14h40", "x": "Convidados chegando", "k": "m"}, {"c": "gustavo", "s": "V", "d": "2025-02-28", "t": "14h40", "x": "Fusion preto", "k": "m"}, {"c": "gustavo", "s": "O", "d": "2025-02-28", "t": "14h42", "x": "Ok", "k": "m"}, {"c": "gustavo", "s": "V", "d": "2025-02-28", "t": "14h42", "x": "Pega carro e recebe eles", "k": "m"}, {"c": "gustavo", "s": "O", "d": "2025-02-28", "t": "14h43", "x": "Ok, estamos aqui no terreo", "k": "m"}, {"c": "gustavo", "s": "V", "d": "2025-02-28", "t": "22h23", "x": "Geraldo ta ai?", "k": "m"}, {"c": "gustavo", "s": "O", "d": "2025-02-28", "t": "22h23", "x": "Esta sim dr", "k": "m"}, {"c": "gustavo", "s": "V", "d": "2025-02-28", "t": "22h24", "x": "Levar karol, ela ta indo garagem", "k": "m"}, {"c": "gustavo", "s": "O", "d": "2025-02-28", "t": "22h24", "x": "Ok dr", "k": "m"}, {"c": "gustavo", "s": "O", "d": "2025-02-28", "t": "22h34", "x": "Aguardo o sr?", "k": "m"}, {"c": "gustavo", "s": "O", "d": "2025-02-28", "t": "23h25", "x": "Dr, qual horário amanhã?", "k": "m"}, {"c": "renno", "s": "V", "d": "2025-02-28", "t": "14h40", "x": "Ta sp?", "k": "m"}, {"c": "renno", "s": "O", "d": "2025-02-28", "t": "14h41", "x": "Bh", "k": "m"}, {"c": "renno", "s": "O", "d": "2025-02-28", "t": "14h41", "x": "Lutando", "k": "m"}, {"c": "renno", "s": "V", "d": "2025-02-28", "t": "14h42", "x": "Boa", "k": "m"}, {"c": "renno", "s": "O", "d": "2025-02-28", "t": "14h42", "x": "To no escritório ! Olhando aqui senão fudeo minha vida", "k": "m"}, {"c": "renno", "s": "V", "d": "2025-02-28", "t": "14h44", "x": "Faz bem", "k": "m"}, {"c": "renno", "s": "V", "d": "2025-02-28", "t": "14h44", "x": "Eu fazendo graça pra ministro em sp", "k": "m"}, {"c": "kiko", "s": "V", "d": "2025-02-26", "t": "11h00", "x": "Vouch receber ministro aqui sexta", "k": "m"}, {"c": "kiko", "s": "V", "d": "2025-02-27", "t": "15h29", "x": "To igual louco sp", "k": "m"}, {"c": "kiko", "s": "O", "d": "2025-02-27", "t": "15h29", "x": "Pepinos ?", "k": "m"}, {"c": "kiko", "s": "O", "d": "2025-02-27", "t": "15h30", "x": "Agora tendi vc mudou almoço ministro lá pra", "k": "m"}, {"c": "kiko", "s": "V", "d": "2025-02-28", "t": "10h19", "x": "Opa", "k": "m"}, {"c": "kiko", "s": "V", "d": "2025-02-28", "t": "10h19", "x": "Cara essas automacoes vao me matar um dia", "k": "m"}, {"c": "kiko", "s": "V", "d": "2025-02-28", "t": "10h19", "x": "Tem alguem pra vir leo? Nao ta funcuonando os ambientes roma", "k": "m"}, {"c": "kiko", "s": "O", "d": "2025-02-28", "t": "11h01", "x": "Tenho pera i", "k": "m"}, {"c": "kiko", "s": "O", "d": "2025-02-28", "t": "11h01", "x": "Deixa ver consegue resolver remoto", "k": "m"}, {"c": "kiko", "s": "V", "d": "2025-02-28", "t": "11h02", "x": "Resolvi", "k": "m"}, {"c": "kiko", "s": "O", "d": "2025-02-28", "t": "11h03", "x": "Ele tá aí", "k": "m"}, {"c": "kiko", "s": "O", "d": "2025-02-28", "t": "11h03", "x": "Embaixo", "k": "m"}, {"c": "kiko", "s": "O", "d": "2025-02-28", "t": "11h03", "x": "Já", "k": "m"}, {"c": "kiko", "s": "O", "d": "2025-02-28", "t": "11h03", "x": "Cara automação", "k": "m"}, {"c": "kiko", "s": "V", "d": "2025-02-28", "t": "11h03", "x": "Pode mandar embora rsrs", "k": "m"}, {"c": "kiko", "s": "V", "d": "2025-02-28", "t": "11h03", "x": "Fiz curso intensivo", "k": "m"}, {"c": "kiko", "s": "O", "d": "2025-02-28", "t": "11h10", "x": "Kkkkkkk", "k": "m"}, {"c": "kiko", "s": "V", "d": "2025-02-28", "t": "11h41", "x": "Kkkk cara", "k": "m"}, {"c": "kiko", "s": "O", "d": "2025-02-28", "t": "11h44", "x": "Que", "k": "m"}, {"c": "kiko", "s": "V", "d": "2025-02-28", "t": "12h44", "x": "Pelo amor de Deus", "k": "m"}, {"c": "kiko", "s": "V", "d": "2025-02-28", "t": "12h44", "x": "Tira quele sofa da varanda leo", "k": "m"}, {"c": "kiko", "s": "V", "d": "2025-02-28", "t": "12h45", "x": "To passando vergonha. Melhor deixar sem nada", "k": "m"}, {"c": "kiko", "s": "V", "d": "2025-02-28", "t": "12h45", "x": "Ele é logo na entrada, primeira coisa que a pessoa ve", "k": "m"}, {"c": "kiko", "s": "O", "d": "2025-02-28", "t": "12h48", "x": "Que ouve ?", "k": "m"}, {"c": "kiko", "s": "O", "d": "2025-02-28", "t": "12h49", "x": "Já sei rasgou dinovo pqp", "k": "m"}, {"c": "kiko", "s": "V", "d": "2025-02-28", "t": "13h55", "x": "Nem voltou", "k": "m"}, {"c": "kiko", "s": "V", "d": "2025-02-28", "t": "13h55", "x": "Ta essa baranga tem 6 meses", "k": "m"}, {"c": "kiko", "s": "V", "d": "2025-02-28", "t": "13h55", "x": "Manda tirar", "k": "m"}, {"c": "kiko", "s": "V", "d": "2025-02-28", "t": "13h55", "x": "Deixa sem", "k": "m"}, {"c": "kiko", "s": "O", "d": "2025-02-28", "t": "13h56", "x": "Foi arrumado uma vez", "k": "m"}, {"c": "kiko", "s": "V", "d": "2025-02-28", "t": "13h56", "x": "Aqui", "k": "m"}, {"c": "kiko", "s": "V", "d": "2025-02-28", "t": "13h56", "x": "Quem e o cara ar", "k": "m"}, {"c": "kiko", "s": "O", "d": "2025-02-28", "t": "13h56", "x": "Vou arrumar", "k": "m"}, {"c": "kiko", "s": "V", "d": "2025-02-28", "t": "13h56", "x": "Agora ar pifou", "k": "m"}, {"c": "kiko", "s": "O", "d": "2025-02-28", "t": "13h56", "x": "Um que não destrói", "k": "m"}, {"c": "kiko", "s": "O", "d": "2025-02-28", "t": "13h56", "x": "Não (respondendo a “Agora ar pifou”)", "k": "m"}, {"c": "kiko", "s": "O", "d": "2025-02-28", "t": "13h56", "x": "Pqp", "k": "m"}, {"c": "kiko", "s": "O", "d": "2025-02-28", "t": "13h57", "x": "Vou chamar", "k": "m"}, {"c": "chef", "s": "V", "d": "2025-02-26", "t": "16h12", "x": "Sexta churrasco animado", "k": "m"}, {"c": "chef", "s": "V", "d": "2025-02-26", "t": "16h12", "x": "Com min e", "k": "m"}, {"c": "chef", "s": "O", "d": "2025-02-27", "t": "07h37", "x": "Qd tiver essas informações me manda pra amanhã .  Pax Horário", "k": "m"}, {"c": "chef", "s": "O", "d": "2025-02-27", "t": "18h25", "x": "Outra coisa: como amanhã é fim de mês, e semana que vem. Quero que você só se preocupando com “🎶🎶 Olha a cabeleira do Zezé… Será que ele é, será que é… 🎶🎶”, hein?  Segue o relatório de compras já atualizado com os dados de amanhã.", "k": "m"}, {"c": "chef", "s": "O", "d": "2025-02-27", "t": "18h26", "x": "Relatório de despesas — PDF de 1 página anexado à conversa", "k": "f"}, {"c": "chef", "s": "V", "d": "2025-02-28", "t": "10h55", "x": "Sao 15 pax", "k": "m"}, {"c": "chef", "s": "V", "d": "2025-02-28", "t": "10h57", "x": "13", "k": "m"}, {"c": "chef", "s": "O", "d": "2025-02-28", "t": "11h43", "x": "Subindo", "k": "m"}, {"c": "leo", "s": "O", "d": "2025-02-26", "t": "00h16", "x": "Newton pedindo Fasano Itaim essa sexta a sabado pro KN, pode fazer neh?", "k": "m"}];
+const EVT  = [{"d": "", "t": "", "tit": "Cerca de cinco meses antes: o desempate do caso Alcídia", "x": "Na Segunda Turma do STF, Nunes Marques desempatou o caso Alcídia, estratégico para os precatórios do setor sucroalcooleiro que ajudariam a recompor o balanço do Master. Há mensagens em que Vorcaro e seus advogados celebram o desempate.", "tom": "ctx"}, {"d": "", "t": "", "tit": "A defesa do Master já havia pedido o caso três vezes", "x": "Por três ocasiões a defesa do banco pediu que o caso do Master ficasse nas mãos de Nunes Marques, e não de André Mendonça.", "tom": "ctx"}, {"d": "2025-02-26", "t": "00h16", "tit": "Newton Ramos pede quarto no Fasano Itaim", "x": "O desembargador do TRF-1 Newton Ramos pediu ao agente de viagens de Vorcaro um quarto no Hotel Fasano Itaim — hotel do qual o banqueiro era sócio — para “essa sexta a sábado pro KN”, sigla de Kassio Nunes.", "tom": "alerta"}, {"d": "2025-02-26", "t": "16h12", "tit": "Vorcaro encomenda o churrasco", "x": "Ao chef José Maria Meira: “Sexta churrasco animado”. Em seguida manda a mensagem incompleta “Com min e”.", "tom": "ctx"}, {"d": "2025-02-27", "t": "07h37", "tit": "O chef pede horário e número de convidados", "x": "Meira pede as informações para o dia seguinte (“Pax Horário”) e avisa que enviará o relatório de compras atualizado.", "tom": "ctx"}, {"d": "2025-02-27", "t": "18h26", "tit": "Compras: R$ 21.121,90", "x": "Na casa de carnes deBetti o chef gastou R$ 1.772. Em outro endereço comprou cinco latas de caviar a R$ 15.100, além de trufas. Total: R$ 21.121,90 — com a equipe recrutada, as despesas chegam à casa dos R$ 27 mil.", "tom": "ctx"}, {"d": "2025-02-27", "t": "23h07", "tit": "O mal-entendido sobre o endereço se desfaz", "x": "Vorcaro e Kiko Sobrinho se confundiram sobre “a casa”; Kiko alertou que havia obras na piscina. Às 23h07 Vorcaro esclarece: Michael deve se apresentar às 13h do dia seguinte na “Leo”, o tríplex da Rua Leopoldo Couto de Magalhães Júnior, no Itaim Bibi.", "tom": "ctx"}, {"d": "2025-02-28", "t": "11h14", "tit": "O mordomo segue para o tríplex", "x": "Michael informa que já estava indo para a “Leo” ajudar a preparar o churrasco.", "tom": "ctx"}, {"d": "2025-02-28", "t": "13h54", "tit": "O endereço vai para a agenciadora", "x": "Vorcaro manda a Rayanna: “Leopoldo [número e andar omitidos], itaim”.", "tom": "ctx"}, {"d": "2025-02-28", "t": "14h40", "tit": "Convidados chegam em um Ford Fusion preto", "x": "Vorcaro orienta os motoristas a receber o carro dos convidados; Gustavo fica no térreo com Geraldo acompanhando as chegadas.", "tom": "ctx"}, {"d": "2025-02-28", "t": "16h31", "tit": "O Master 800 milhões dentro do compulsório", "x": "Paulo Sergio Souza, ex-diretor do Banco Central: “Daniel, o banco está 800 mm no compulsório. Algum problema maior?” Vorcaro: “Não, depois do carnaval vai regularizar tudo”. O banco usava o depósito compulsório para garantir liquidez naquele dia, descumprindo requisitos mínimos para operar. Vorcaro contava com a operação com o BRB, anunciada no mês seguinte.", "tom": "master"}, {"d": "2025-02-28", "t": "20h20", "tit": "O compulsório vira 1,25 bilhão — e Vorcaro demite o executivo", "x": "Alberto Felix de Oliveira Neto responde “1.250” (R$ 1,25 bilhão). Vorcaro: “Como assim Alberto. Estava 800. Vocês piraram.” Às 20h26, escreve a Angelo Silva: “Demite Alberto. Vamos voltar eu e você e tentar salvar. O cara deixou o banco com -1.250.”", "tom": "master"}, {"d": "2025-02-28", "t": "23h58", "tit": "Fim da noite", "x": "O mordomo recolhe os vestígios antes que a faxineira chegasse: três preservativos usados sobre o tapete e uma calcinha de renda preta entre o lençol e a fronha.", "tom": "ctx"}, {"d": "2025-03-01", "t": "08h44", "tit": "Selma é dispensada", "x": "“Nao precisa vir hoje”, escreve Vorcaro à empregada.", "tom": "ctx"}, {"d": "2025-03-07", "t": "13h21", "tit": "A cobrança: R$ 10 mil por encontro", "x": "Rayanna: “A minha amiga lá aquele dia ! Deu certo né ? (…) Ela disse que ficou com o kassio!”. Vorcaro pede “Dados e valor”; ela responde “10 né!” e manda seu Pix.", "tom": "alerta"}, {"d": "", "t": "", "tit": "A festa coincidiu com os repasses a Kevin Marques", "x": "No período da festa, o Master transferiu, em catorze operações, R$ 6,6 milhões à Consult Inteligência Tributária. A consultoria repassou R$ 282 mil a Kevin Marques, filho do ministro. Outras mensagens mostram que Vorcaro pagava a Kevin salário de R$ 500 mil mensais.", "tom": "master"}, {"d": "2026-09-15", "t": "", "tit": "Metrópoles publica os primeiros diálogos", "x": "Andreza Matais e André Shalders revelam as conversas entre Vorcaro e a agenciadora — com a citação a um “kassio” grafado com K. Os diálogos saem no mesmo dia da sessão do STF sobre o envolvimento de Alexandre de Moraes com o Master; na abertura da sessão, Nunes Marques declara que não participaria da votação, alegando não querer contaminar sua posição como presidente do TSE. Nada se falou do diálogo comprometedor.", "tom": "imprensa"}, {"d": "2026-10-13", "t": "", "tit": "UOL revela as cinco garotas e a mensagem a Rennó", "x": "A jornalista Daniela Lima publica que o encontro no tríplex teve cinco garotas de programa e que Vorcaro escreveu a Rennó no dia da festa: “fazendo graça para ministro em SP”. As mensagens vêm do celular de Vorcaro apreendido pela Polícia Federal.", "tom": "imprensa"}, {"d": "2026-10-15", "t": "", "tit": "A piauí publica as 125 mensagens", "x": "A revista reconstrói a noitada com o conjunto de mensagens e procura o ministro. O STF, até então, não tomou nenhuma providência sobre o caso.", "tom": "imprensa"}];
+const CONV = {"rayanna": {"n": "Rayanna", "r": "agenciadora de garotas de programa", "g": "intermediária"}, "selma": {"n": "Selma", "r": "empregada / faxineira", "g": "equipe da casa"}, "michael": {"n": "Michael", "r": "mordomo", "g": "equipe da casa"}, "gustavo": {"n": "Gustavo", "r": "motorista", "g": "equipe da casa"}, "renno": {"n": "Luiz Rennó", "r": "ex-diretor jurídico do Banco Master", "g": "núcleo Master"}, "kiko": {"n": "Kiko Sobrinho", "r": "arquiteto, amigo de Vorcaro", "g": "equipe da casa"}, "chef": {"n": "José Maria Meira", "r": "chef de cozinha", "g": "equipe da casa"}, "leo": {"n": "Leo Serrano Giunchetti", "r": "agente de viagens", "g": "logística"}};
+const ORG  = [{"t": "A equipe da casa — o tríplex “Leo”", "ic": "🏠", "sub": "Quem Vorcaro acionou para montar, servir e operar a noite. Seis pessoas (mordomo, chef, faxineira, dois motoristas e um arquiteto) e ao menos quatro conversas só sobre a festa.", "p": [{"id": "michael", "n": "Michael", "r": "Mordomo", "tag": "equipe", "tagc": "#6ea8fe", "noite": "Ajudante de ordens da noite: chegou às 13h para o churrasco, abriu as janelas, recebeu os convidados, emprestou o quarto ao ministro e às cinco mulheres, recolheu os vestígios antes da faxineira e relatou cada passo ao patrão.", "ev": "“Emprestei quarto do lado para ministro com 5 menina. Liguei para pedi autorização mais senhor não viu” (20h56)"}, {"id": "chef", "n": "José Maria Meira", "r": "Chef de cozinha", "tag": "equipe", "tagc": "#6ea8fe", "noite": "Comprou os insumos na véspera (deBetti e caviar), montou o churrasco para 15 pessoas e contratou reforço de garçom.", "ev": "“Sao 15 pax” / “Vamos precisar garçon” — compras de R$ 21.121,90 em 27/02"}, {"id": "selma", "n": "Selma", "r": "Empregada / faxineira", "tag": "equipe", "tagc": "#6ea8fe", "noite": "Não foi ao tríplex no dia da festa e foi dispensada na manhã seguinte — o mordomo recolheu os vestígios justamente “pra não deixar pra Selma”.", "ev": "“Tô arrumando pra não deixa pra selma essas coisa” (23h24) / “Nao precisa vir hoje” (08h44 de 01/03)"}, {"id": "gustavo", "n": "Gustavo", "r": "Motorista", "tag": "equipe", "tagc": "#6ea8fe", "noite": "Organizou o fluxo de chegada no térreo: recebeu as meninas a partir das 14h04, recepcionou o Ford Fusion preto dos convidados e depois levou “karol” até a garagem.", "ev": "“Dr, começou chegar meninas / Pode liberar?” → “Todas que chegarem / Pode subir” (14h04-14h06)"}, {"id": "geraldo", "n": "Geraldo", "r": "Motorista (citado, sem conversa própria)", "tag": "equipe", "tagc": "#6ea8fe", "noite": "Escalado com Gustavo para acompanhar as chegadas e permanecer no térreo do edifício durante a festa.", "ev": "“Fica embaixo vc e geraldo e acompanha chegada” / “Geraldo ta ai?” → “Esta sim dr” (22h23)"}, {"id": "kiko", "n": "Kiko Sobrinho", "r": "Arquiteto, amigo de Vorcaro", "tag": "equipe", "tagc": "#6ea8fe", "noite": "Chamado para resolver emergências do apartamento na véspera e no dia: automação dos ambientes, sofá da varanda e o ar-condicionado que “pifou” às 13h56.", "ev": "“Vouch receber ministro aqui sexta” (26/02) — “Pelo amor de Deus. Tira quele sofa da varanda leo” (12h44)"}]}, {"t": "A intermediação — quem trouxe as mulheres", "ic": "🔑", "sub": "O único canal fora da casa. A agenciadora não foi ao tríplex, mandou duas mulheres “de confiança”, deu o endereço como referência a quem ia chegar e cobrou o pagamento uma semana depois.", "p": [{"id": "rayanna", "n": "Rayanna", "r": "Agenciadora de garotas de programa", "tag": "interm", "tagc": "#d8a340", "noite": "Intermediou o encontro: ofereceu as duas mulheres de sua confiança quando não pôde ir, recebeu o endereço do tríplex e, uma semana depois, cobrou o pagamento da amiga que ficou com o ministro.", "ev": "“Ela disse que ficou com o kassio!” → “10 né!” (07/03) — “Só lembra que sem celular” (12h23)"}, {"id": "garotas", "n": "As cinco mulheres", "r": "Garotas de programa (não identificadas)", "tag": "interm", "tagc": "#d8a340", "noite": "Cinco mulheres no tríplex; ao menos duas chegaram por intermédio de Rayanna. Sem celular, por ordem expressa de Vorcaro. Uma delas passou mal e vomitou na área da piscina.", "ev": "“Emprestei quarto do lado para ministro com 5 menina” (20h56) / “pessoal tudo pelado na piscina uma passou mau vomitou” (22h08)"}]}, {"t": "A rede de poder — o convidado e seu entorno", "ic": "⚖️", "sub": "O lado por quem a noite foi montada. Inclui quem hospedou, quem pediu o quarto e quem recebia dinheiro do banco no mesmo período.", "p": [{"id": "kassio", "n": "Kassio Nunes Marques", "r": "Ministro do STF e presidente do TSE", "tag": "poder", "tagc": "#e0617b", "noite": "Convidado de honra da noite. Citado nas mensagens como “kassio” e “KN”. No dia em que os primeiros diálogos vieram a público, anunciou no STF que não participaria da votação sobre Moraes e o Master. Nega tudo.", "ev": "“Ela disse que ficou com o kassio!”, “Ministro tá sem pressa nenhuma de ir embora” — e a nota oficial: “nunca trocou mensagens com ele”"}, {"id": "newton", "n": "Newton Ramos", "r": "Desembargador do TRF-1", "tag": "poder", "tagc": "#e0617b", "noite": "Foi quem pediu, pelo agente de viagens, um quarto no Hotel Fasano Itaim — do qual Vorcaro era sócio — “essa sexta a sabado pro KN”.", "ev": "“Newton pedindo Fasano Itaim essa sexta a sabado pro KN, pode fazer neh?” (00h16 de 26/02)"}, {"id": "kevin", "n": "Kevin Marques", "r": "Filho do ministro", "tag": "poder", "tagc": "#e0617b", "noite": "No período da festa, recebeu R$ 282 mil repassados pela Consult Inteligência Tributária, beneficiária de R$ 6,6 milhões do Master em catorze operações. Segundo outras mensagens, tinha salário de R$ 500 mil mensais pagos por Vorcaro.", "ev": "Repasses de R$ 6,6 mi → R$ 282 mil; salário de R$ 500 mil/mês"}, {"id": "leo_travel", "n": "Leo Serrano Giunchetti", "r": "Agente de viagens", "tag": "logistica", "tagc": "#7fa6c9", "noite": "Recebeu o pedido do quarto no Fasano Itaim para o ministro na madrugada de 26/02 — primeiro elo logístico da estadia que terminou no tríplex.", "ev": "“Newton pedindo Fasano Itaim essa sexta a sabado pro KN, pode fazer neh?”"}]}, {"t": "O núcleo Master — o outro celular da mesma noite", "ic": "🏦", "sub": "Enquanto a festa corria, Vorcaro administrava a crise de liquidez do banco. Estas conversas não são com a equipe da casa, mas aparecem nas mesmas horas do dia 28.", "p": [{"id": "renno", "n": "Luiz Rennó", "r": "Ex-diretor jurídico do Banco Master", "tag": "master", "tagc": "#a78bfa", "noite": "Único interlocutor em quem Vorcaro se gaba abertamente do motivo da festa, minutos antes de os convidados chegarem. Rennó estava em Belo Horizonte, acompanhando o escritório “senão fudeo minha vida”.", "ev": "“Eu fazendo graça pra ministro em sp” (14h44)"}, {"id": "alberto", "n": "Alberto Felix de Oliveira Neto", "r": "Executivo do Master", "tag": "master", "tagc": "#a78bfa", "noite": "Informou a Vorcaro, às 20h20, que o uso do compulsório havia chegado a “1.250” — R$ 1,25 bilhão. Foi mandado demitir minutos depois.", "ev": "“Como assim Alberto. Estava 800. Vocês piraram.” / “Demite Alberto” (20h26)"}, {"id": "angelo", "n": "Angelo Silva", "r": "Executivo do Master", "tag": "master", "tagc": "#a78bfa", "noite": "Destinatário da ordem de demissão de Alberto e do plano de “voltar eu e você e tentar salvar” o banco.", "ev": "“Demite Alberto. Vamos voltar eu e você e tentar salvar. O cara deixou o banco com -1.250.”"}, {"id": "paulo", "n": "Paulo Sergio Souza", "r": "Ex-diretor do Banco Central (contato atribuído)", "tag": "master", "tagc": "#a78bfa", "noite": "Alertou Vorcaro, às 16h31 da sexta, que o banco estava 800 milhões dentro do compulsório — descumprindo requisitos mínimos para operar no país.", "ev": "“Daniel, o banco está 800 mm no compulsório. Algum problema maior?”"}, {"id": "brb", "n": "BRB — Banco de Brasília", "r": "Banco estatal (operação de capital)", "tag": "master", "tagc": "#a78bfa", "noite": "Operação com o BRB, destinada a injetar capital no Master, era a aposta de Vorcaro para regularizar a situação — e seria anunciada no mês seguinte à festa.", "ev": "Contexto da resposta “depois do carnaval vai regularizar tudo”"}]}];
+const ARENA= {"t": "A arena institucional, a imprensa e a fiscalização", "ic": "🗂️", "sub": "Não estavam no tríplex, mas definem o peso do que aconteceu ali: o foro onde o caso do banco tramita, o tribunal da eleição, quem apreendeu o celular e quem publicou.", "p": [{"id": "pf", "n": "Polícia Federal", "r": "Origem das mensagens", "tag": "fiscal", "tagc": "#7f8ea3", "noite": "Apreendeu o celular de Vorcaro; é dele que saem as 125 mensagens publicadas pela piauí, pelo UOL e pelo Metrópoles.", "ev": "“todas elas obtidas em um celular de Vorcaro apreendido pela Polícia Federal”"}, {"id": "stf", "n": "Supremo Tribunal Federal", "r": "Foro do caso Master", "tag": "fiscal", "tagc": "#7f8ea3", "noite": "O processo por fraude bancária do Master tramita na própria corte. A defesa do banco pediu três vezes que ficasse com Nunes Marques. Até a publicação, o tribunal não tomou nenhuma providência sobre o caso.", "ev": "Caso Alcídia desempatado na 2ª Turma; sessão de 15/09/2026 sobre Moraes e o Master"}, {"id": "tse", "n": "TSE", "r": "Tribunal presidido pelo ministro", "tag": "fiscal", "tagc": "#7f8ea3", "noite": "Presidido por Nunes Marques, que alegou não querer contaminar sua posição de condutor da eleição — a eleição presidencial se avizinhava.", "ev": "Declaração na sessão do STF de 15/09/2026"}, {"id": "imprensa", "n": "Metrópoles · UOL · piauí", "r": "Imprensa", "tag": "fiscal", "tagc": "#7f8ea3", "noite": "Metrópoles (15/09/2026) publica os primeiros diálogos; UOL (13/10/2026) revela as cinco garotas e a mensagem a Rennó; a piauí (15/10/2026) reconstrói a noite com as 125 mensagens.", "ev": "Andreza Matais e André Shalders; Daniela Lima; Breno Pires, Ana Clara Costa e João Batista Jr."}, {"id": "mendonca", "n": "André Mendonça", "r": "Ministro do STF", "tag": "fiscal", "tagc": "#7f8ea3", "noite": "Nome em torno do qual se travou a disputa pelo relatório do caso Master: a defesa do banco preferia Nunes Marques, e contava-se com Nunes Marques para afastar Moraes.", "ev": "“com quem o ministro André Mendonça contava para afastar Moraes”"}, {"id": "moraes", "n": "Alexandre de Moraes", "r": "Ministro do STF", "tag": "fiscal", "tagc": "#7f8ea3", "noite": "Seu envolvimento com o banco Master era o tema da sessão do STF no mesmo dia em que os diálogos vieram a público.", "ev": "Sessão do STF de 15/09/2026"}, {"id": "cueva", "n": "Ricardo Villas Bôas Cueva", "r": "Relator do caso do canal “Exército do Lula”", "tag": "fiscal", "tagc": "#7f8ea3", "noite": "Nem o próprio relator sustentava a direção da decisão de Nunes Marques que derrubou o canal de WhatsApp da militância petista.", "ev": "Decisão “de ofício, ainda que não houvesse maioria de votos em plenário nessa direção”"}, {"id": "flavio", "n": "Flávio Bolsonaro", "r": "Candidato na eleição presidencial", "tag": "fiscal", "tagc": "#7f8ea3", "noite": "Candidato a quem a reportagem atribui decisões favoráveis do ministro que preside a eleição; foi seu pai quem indicou Nunes Marques para a corte.", "ev": "“cujo pai indicou o ministro para integrar a corte”"}]};
+const LOCS = [{"id": "triplex", "n": "Tríplex “Leo” — a casa da festa", "e": "Rua Leopoldo Couto de Magalhães Júnior, Itaim Bibi, São Paulo/SP", "cid": "São Paulo", "q": "Rua Leopoldo Couto de Magalhães Júnior, Itaim Bibi, São Paulo", "por": "O apartamento de Daniel Vorcaro onde ocorreu a noitada de 28/02/2025. “Leo” era o apelido do imóvel. O endereço foi enviado a Rayanna às 13h54: “Leopoldo [número e andar omitidos], itaim”."}, {"id": "fasano", "n": "Hotel Fasano São Paulo Itaim", "e": "Rua Pedroso Alvarenga, Itaim Bibi, São Paulo/SP (hotel do qual Vorcaro era sócio)", "cid": "São Paulo", "q": "Hotel Fasano São Paulo Itaim", "por": "Quarto pedido pelo desembargador Newton Ramos para a sexta e o sábado “pro KN” — a hospedagem do ministro em São Paulo."}, {"id": "debetti", "n": "deBetti — casa de carnes", "e": "Rua Curumins, 11, Cidade Jardim, São Paulo/SP", "cid": "São Paulo", "q": "deBetti Rua Curumins 11 Cidade Jardim São Paulo", "por": "Onde o chef José Maria Meira gastou R$ 1.772 em carnes para o churrasco da noite."}, {"id": "master", "n": "Sede do Banco Master", "e": "Av. Brigadeiro Faria Lima, 3477, Itaim Bibi, São Paulo/SP", "cid": "São Paulo", "q": "Avenida Brigadeiro Faria Lima 3477 Itaim Bibi São Paulo", "por": "Sede do banco cujo processo por fraude tramita no STF — e cuja crise de liquidez Vorcaro administrava por mensagem no meio da festa (compulsório de R$ 800 mi saltando para R$ 1,25 bi)."}, {"id": "consult", "n": "Consult Inteligência Tributária", "e": "Rua Araguari, 835, Vila Uberabinha, São Paulo/SP", "cid": "São Paulo", "q": "Rua Araguari 835 Vila Uberabinha São Paulo", "por": "Consultoria que recebeu R$ 6,6 milhões do Master, em catorze operações, no período da festa — e repassou R$ 282 mil a Kevin Marques, filho do ministro."}, {"id": "sapucai", "n": "Camarote Café de La Musique Alma Rio", "e": "Rua Marquês de Sapucaí, Santo Cristo, Rio de Janeiro/RJ", "cid": "Rio de Janeiro", "q": "Rua Marquês de Sapucaí Santo Cristo Rio de Janeiro", "por": "Onde Vorcaro estreou como anfitrião do Carnaval de 2025: fechou um andar inteiro ao custo de R$ 40 milhões, dias depois da festa íntima no tríplex."}, {"id": "parque", "n": "Parque Lage", "e": "Rua Jardim Botânico, 414, Rio de Janeiro/RJ", "cid": "Rio de Janeiro", "q": "Parque Lage Rio de Janeiro", "por": "Uma das celebrações de Carnaval bancadas por Vorcaro na temporada em que exibia seu poder econômico “então intacto”."}, {"id": "santa", "n": "Casarão em Santa Teresa", "e": "Santa Teresa, Rio de Janeiro/RJ", "cid": "Rio de Janeiro", "q": "Santa Teresa Rio de Janeiro", "por": "Outra das festas de Carnaval bancadas pelo banqueiro, citada junto ao Parque Lage e ao camarote da Sapucaí."}, {"id": "stf", "n": "Supremo Tribunal Federal", "e": "Praça dos Três Poderes, Brasília/DF", "cid": "Brasília", "q": "Supremo Tribunal Federal Praça dos Três Poderes Brasília", "por": "Foro do processo do Master e da sessão de 15/09/2026 sobre Moraes e o banco; na Segunda Turma, Nunes Marques desempatou o caso Alcídia."}, {"id": "tse", "n": "Tribunal Superior Eleitoral", "e": "Praça dos Tribunais Superiores, Brasília/DF", "cid": "Brasília", "q": "Tribunal Superior Eleitoral Brasília", "por": "Presidido por Nunes Marques, que usou o cargo para justificar não participar da votação sobre Moraes e o Master."}, {"id": "bacen", "n": "Banco Central", "e": "SBS Quadra 3, Bloco B, Brasília/DF", "cid": "Brasília", "q": "Banco Central do Brasil SBS Quadra 3 Brasília", "por": "O compulsório usado pelo Master para garantir liquidez em 28/02/2025 — R$ 800 milhões, depois R$ 1,25 bilhão — descumprindo requisitos mínimos de operação."}, {"id": "brb", "n": "BRB — Banco de Brasília", "e": "SBS Quadra 1, Bloco E, Brasília/DF", "cid": "Brasília", "q": "BRB Banco de Brasília sede Brasília", "por": "A operação com o banco estatal, que injetaria capital no Master, era a aposta de Vorcaro naquela sexta — e seria anunciada no mês seguinte."}, {"id": "bh", "n": "Belo Horizonte", "e": "Belo Horizonte/MG", "cid": "Belo Horizonte", "q": "Belo Horizonte MG", "por": "De onde Luiz Rennó, ex-diretor jurídico do Master, respondeu “Bh” às 14h41 de 28/02 — acompanhando o escritório enquanto Vorcaro “fazia graça para ministro em SP”."}];
+const DESP = [{"i": "Casa de carnes deBetti (SP)", "v": "R$ 1.772,00", "o": "Carnes para o churrasco de 15 pessoas"}, {"i": "Cinco latas de caviar", "v": "R$ 15.100,00", "o": "Compradas em outro endereço, junto com trufas"}, {"i": "Total das compras do chef", "v": "R$ 21.121,90", "o": "Relatório de despesas enviado a Vorcaro em 27/02, 18h26"}, {"i": "Custo total estimado da noite", "v": "≈ R$ 27.000,00", "o": "Com a equipe recrutada (chef, mordomo, faxineira, motoristas, arquiteto)"}];
+
+const WD=['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'];
+const MO=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+function dparts(d){const p=d.split('-');return {y:+p[0],m:+p[1],dd:+p[2]};}
+function dlabel(d){const p=dparts(d);const dt=new Date(Date.UTC(p.y,p.m-1,p.dd));
+ return WD[dt.getUTCDay()]+', '+p.dd+' de '+MO[p.m-1]+' de '+p.y;}
+function dshort(d){const p=dparts(d);return String(p.dd).padStart(2,'0')+'/'+String(p.m).padStart(2,'0');}
+function tmin(t){if(!t)return -1;const m=String(t).match(/(\d{1,2})h(\d{2})/);if(!m)return 9999;return (+m[1])*60+(+m[2]);}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function hl(s,q){const e=esc(s);if(!q)return e;const rx=new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');return e.replace(rx,'<mark style="background:rgba(216,163,64,.28);color:#fff">$1</mark>');}
+
+/* ---------- navegação ---------- */
+const SECS=['geral','tempo','org','mapa','msgs','metodo'];
+function go(id){
+  SECS.forEach(s=>{document.getElementById('s-'+s).classList.toggle('on',s===id);});
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.sec===id));
+  try{history.replaceState(null,'','#'+id);}catch(e){}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('nav.tabs button').forEach(b=>b.addEventListener('click',()=>go(b.dataset.sec)));
+document.addEventListener('keydown',e=>{
+  if(e.key==='/'&&document.activeElement.id!=='q'){e.preventDefault();go('msgs');document.getElementById('q').focus();return;}
+  if(e.key==='Escape'){const q=document.getElementById('q');if(q.value){q.value='';renderConvs('');}}
+  if(/^[1-6]$/.test(e.key)&&document.activeElement.id!=='q'){go(SECS[+e.key-1]);}
+});
+
+/* ---------- visão geral: seis momentos ---------- */
+const seis=[
+ ['1 · A hospedagem','26/02, 00h16 — o desembargador Newton Ramos pede quarto no Fasano Itaim, hotel do qual Vorcaro era sócio, “essa sexta a sabado pro KN”.'],
+ ['2 · O sigilo','28/02, 12h23 — a instrução a Rayanna que define o tom da operação: “So lembra que sem celular”.'],
+ ['3 · A chegada','28/02, 14h04 — “Dr, começou chegar meninas / Pode liberar?” → “Todas que chegarem / Pode subir”. Às 14h40, o Ford Fusion preto dos convidados.'],
+ ['4 · A jactância','28/02, 14h44 — a Luiz Rennó, ex-diretor jurídico do Master: “Eu fazendo graça pra ministro em sp”.'],
+ ['5 · O quarto','28/02, 20h56 — Michael: “Emprestei quarto do lado para ministro com 5 menina”. 21h37: “So fecha Meu quarto. E mostra o outro. Se vier o terceiro coloca sala tv”.'],
+ ['6 · Os vestígios','28/02, 23h24 e 23h27 — fotos de três preservativos usados e de uma calcinha de renda preta, “pra não deixa pra selma essas coisa”. Na manhã seguinte, Selma é dispensada.']
+];
+document.getElementById('seis').innerHTML=seis.map(s=>'<li><b>'+s[0]+'</b><br>'+esc(s[1])+'</li>').join('');
+
+/* ---------- linha do tempo ---------- */
+let fConv='todos', fCtx=true, fPoder=false;
+const PODER=['kassio','newton','kevin','leo_travel'];
+document.getElementById('filters').innerHTML=
+ '<span class="count" style="margin-right:4px">Interlocutor:</span>'+
+ '<button class="chip on" data-c="todos">todas as conversas</button>'+
+ Object.keys(CONV).map(k=>'<button class="chip" data-c="'+k+'">'+esc(CONV[k].n)+'</button>').join('');
+document.querySelectorAll('#filters .chip').forEach(c=>c.addEventListener('click',()=>{
+  fConv=c.dataset.c;
+  document.querySelectorAll('#filters .chip').forEach(x=>x.classList.toggle('on',x===c));
+  renderTL();
+}));
+document.getElementById('tog-ctx').addEventListener('click',function(){fCtx=!fCtx;this.classList.toggle('on',fCtx);renderTL();});
+document.getElementById('tog-poder').addEventListener('click',function(){fPoder=!fPoder;this.classList.toggle('on',fPoder);renderTL();});
+
+function evRows(){
+  const out=[];
+  EVT.forEach(e=>out.push({d:e.d,t:e.t,sort:(e.d?tmin(e.t):-1),kind:'ev',tom:e.tom,tit:e.tit,x:e.x}));
+  return out;
+}
+function msgRows(){
+  const out=[];
+  MSGS.forEach(m=>{
+    if(fConv!=='todos'&&m.c!==fConv)return;
+    out.push({d:m.d,t:m.t,sort:tmin(m.t),kind:'m',tom:'',m:m});
+  });
+  return out;
+}
+function renderTL(){
+  let rows=[];
+  if(fPoder){
+    rows=MSGS.filter(m=>PODER.indexOf(m.c)>=0).map(m=>({d:m.d,t:m.t,sort:tmin(m.t),kind:'m',tom:'',m:m}));
+  }else{
+    rows=msgRows();
+    if(fCtx)rows=rows.concat(evRows());
+  }
+  rows.sort((a,b)=>a.d<b.d?-1:a.d>b.d?1:(a.sort-b.sort));
+  const dias={};rows.forEach(r=>{(dias[r.d]=dias[r.d]||[]).push(r);});
+  let html='',n=0;
+  Object.keys(dias).forEach(d=>{
+    html+='<div class="day"><div class="dayhead">'+(d?dlabel(d):'Contexto sem data fixada na reportagem')+'</div><div class="rail">';
+    dias[d].forEach(r=>{
+      if(r.kind==='m'){
+        n++;
+        const m=r.m,cv=CONV[m.c];
+        const who=(m.s==='V')?'<span class="nm">Vorcaro</span>':'<span class="nm">'+esc(cv.n)+'</span>';
+        const to=(m.s==='V')?'<span class="arr">→ '+esc(cv.n)+'</span>':'<span class="arr">← '+esc(cv.n)+'</span>';
+        html+='<div class="tl '+(m.s==='V'?'v':'o')+'"><div class="h">'+esc(m.t||'—')+'</div><div class="b">'+
+          '<div class="who">'+who+to+(m.k==='f'?'<span class="tagpill">anexo</span>':'')+'</div>'+
+          '<div class="tx">'+esc(m.x)+'</div></div></div>';
+      }else{
+        html+='<div class="tl ev '+(r.tom||'ctx')+'"><div class="h">'+esc(r.t||'—')+'</div><div class="b">'+
+          '<span class="ett">'+esc(r.tit)+'</span><div class="tx">'+esc(r.x)+'</div></div></div>';
+      }
+    });
+    html+='</div></div>';
+  });
+  document.getElementById('timeline').innerHTML=html||'<p class="lead">Nenhum registro para este filtro.</p>';
+  document.getElementById('tlcount').textContent=n+' mensagens · '+rows.length+' registros na tela';
+}
+
+/* ---------- organograma ---------- */
+document.getElementById('orgcols').innerHTML=ORG.map(col=>
+ '<div class="org-col"><h4><span class="ic">'+col.ic+'</span>'+esc(col.t)+'</h4><div class="sub">'+esc(col.sub)+'</div>'+
+ col.p.map(p=>pcard(p)).join('')+'</div>').join('');
+document.getElementById('arena-h').textContent=ARENA.ic+' '+ARENA.t;
+document.getElementById('arena-s').textContent=ARENA.sub;
+document.getElementById('arenagrid').innerHTML=ARENA.p.map(p=>pcard(p)).join('');
+function pcard(p){
+ return '<div class="pcard" style="--pc:'+p.tagc+'"><div class="pn"><span>'+esc(p.n)+'</span>'+
+  '<span class="tagpill" style="color:'+p.tagc+'">'+esc(p.tag)+'</span></div>'+
+  '<div class="pr">'+esc(p.r)+'</div><div class="pt">'+esc(p.noite)+'</div>'+
+  '<div class="pe">📎 '+esc(p.ev)+'</div></div>';
+}
+
+/* ---------- mapa ---------- */
+let curLoc=-1;
+(function(){
+  const byCid={};LOCS.forEach((l,i)=>{(byCid[l.cid]=byCid[l.cid]||[]).push(i);});
+  let h='';
+  Object.keys(byCid).forEach(cid=>{
+    h+='<h5>'+esc(cid)+'</h5>';
+    byCid[cid].forEach(i=>{const l=LOCS[i];
+      h+='<button class="loc" data-i="'+i+'">'+esc(l.n)+'<small>'+esc(l.e)+'</small></button>';});
+  });
+  document.getElementById('maplist').innerHTML=h;
+  document.querySelectorAll('.loc').forEach(b=>b.addEventListener('click',()=>setLoc(+b.dataset.i)));
+})();
+function setLoc(i){
+  curLoc=i;const l=LOCS[i];
+  document.querySelectorAll('.loc').forEach(b=>b.classList.toggle('on',+b.dataset.i===i));
+  document.getElementById('gmap').src='https://www.google.com/maps?q='+encodeURIComponent(l.q)+'&z=15&hl=pt-BR&output=embed';
+  document.getElementById('plname').textContent=l.n;
+  document.getElementById('plend').textContent=l.e;
+  document.getElementById('plpor').textContent=l.por;
+  document.getElementById('pllink').href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(l.q);
+}
+
+/* ---------- mensagens por conversa ---------- */
+function renderConvs(q){
+  q=(q||'').toLowerCase().trim();
+  let hits=0;
+  const html=Object.keys(CONV).map(k=>{
+    const cv=CONV[k];
+    const ms=MSGS.filter(m=>m.c===k);
+    const shown=ms.filter(m=>!q||m.x.toLowerCase().indexOf(q)>=0);
+    hits+=shown.length;
+    const ds=[...new Set(ms.map(m=>m.d))].sort();
+    const range=ds.length?(ds.length>1?dshort(ds[0])+' – '+dshort(ds[ds.length-1]):dshort(ds[0])):'—';
+    if(!shown.length)return '';
+    return '<div class="conv"><header><div class="cn">'+esc(cv.n)+'</div>'+
+      '<div class="cr">'+esc(cv.r)+' · '+esc(cv.g)+' · '+ms.length+' mensagens · '+range+'</div></header>'+
+      '<div class="msgs">'+shown.map(m=>{
+        const dts=dshort(m.d)+' '+m.t;
+        return '<div class="m '+(m.s==='V'?'v':'o')+(m.k==='f'?' f':'')+'"><div class="mt">'+
+          (m.s==='V'?'Vorcaro':'')+' '+dts+'</div><div class="mtt">'+hl(m.x,q)+'</div></div>';
+      }).join('')+'</div></div>';
+  }).join('');
+  document.getElementById('convs').innerHTML=html||'<p class="lead">Nada encontrado para “'+esc(q)+'”.</p>';
+  document.getElementById('qcount').textContent=q?(hits+' mensagens com “'+q+'”'):(MSGS.length+' mensagens em '+Object.keys(CONV).length+' conversas');
+}
+document.getElementById('q').addEventListener('input',e=>renderConvs(e.target.value));
+document.getElementById('desp').innerHTML=DESP.map(d=>'<tr><td>'+esc(d.i)+'</td><td class="o">'+esc(d.o)+'</td><td class="v">'+esc(d.v)+'</td></tr>').join('');
+document.getElementById('nmsgs').textContent=MSGS.length;
+document.getElementById('ntxt').textContent=MSGS.filter(m=>m.k==='m').length;
+document.getElementById('nanx').textContent=MSGS.filter(m=>m.k==='f').length;
+document.getElementById('nenv').textContent=MSGS.filter(m=>m.s==='V').length;
+document.getElementById('nrec').textContent=MSGS.filter(m=>m.s==='O').length;
+
+/* ---------- boot ---------- */
+renderTL();renderConvs('');setLoc(0);
+const h=(location.hash||'').replace('#','');
+if(SECS.indexOf(h)>=0)go(h);
+</script>
+</body>
+</html>
