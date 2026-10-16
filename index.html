@@ -11,7 +11,7 @@
 :root{
  --bg:#0a0c11;--panel:#12161d;--panel2:#171c25;--panel3:#1d2430;--line:#242c39;
  --ink:#e9edf4;--dim:#9aa6b8;--muted:#8492a6;--amber:#d8a340;--amber2:#f2c877;
- --red:#e0617b;--green:#4fb98a;--blue:#6ea8fe;--purple:#a78bfa;--neutral:#7f8ea3;
+ --red:#e0617b;--green:#4fb98a;--blue:#6ea8fe;--purple:#a78bfa;--neutral:#7f8ea3;--ice:#7fa6c9;--press:#c9ccd3;
  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;
  --mono:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace;
@@ -28,8 +28,10 @@ html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:v
  font-optical-sizing:auto;text-rendering:optimizeLegibility;
  -webkit-font-smoothing:antialiased}
 a{color:var(--amber2)}
+a:not(.btn):active{opacity:.72}   /* links de texto também respondem no toque, sem afetar o botão do mapa */
 ::selection{background:rgba(216,163,64,.30);color:#fff}
 :focus-visible{outline:2px solid var(--amber2);outline-offset:2px;border-radius:6px}
+::placeholder{color:var(--muted);opacity:1}   /* o cinza padrão do motor media 3.70:1 */
 header.top{padding:44px 40px 26px;border-bottom:1px solid var(--line);
  background:
   radial-gradient(1200px 400px at 12% -10%,rgba(216,163,64,.10),transparent 60%),
@@ -43,10 +45,11 @@ h1{font-family:var(--serif);font-size:clamp(1.875rem,4.6vw,3.25rem);line-height:
  font-style:italic;text-wrap:pretty}
 .byline{margin-top:18px;font-family:var(--mono);font-size:0.75rem;color:var(--muted);line-height:1.9}
 .byline b{color:var(--dim);font-weight:500}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px;margin-top:30px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(215px,100%),1fr));gap:14px;margin-top:30px}
 .kpi{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);
  border-radius:var(--r-lg);padding:16px 18px;box-shadow:var(--sh-1)}
-.kpi b{display:block;font-family:var(--serif);font-size:1.875rem;color:var(--amber2);line-height:1.1}
+.kpi b{display:block;font-family:var(--serif);font-size:1.875rem;color:var(--amber2);line-height:1.1;
+ letter-spacing:-.02em;font-variant-numeric:tabular-nums}
 .kpi span{display:block;font-size:0.7812rem;color:var(--ink);margin-top:6px;font-weight:600;letter-spacing:.01em}
 .kpi i{display:block;font-size:0.7188rem;color:var(--muted);margin-top:7px;font-style:normal;line-height:1.45}
 /* material translúcido: o conteúdo passa por baixo; a espessura aumenta quando há conteúdo sob a barra */
@@ -56,22 +59,26 @@ nav.tabs{position:sticky;top:0;z-index:30;display:flex;gap:6px;flex-wrap:wrap;pa
  transition:background-color var(--t-state) ease,box-shadow var(--t-state) ease}
 nav.tabs.scrolled{background:rgba(11,14,20,.88);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),var(--sh-2)}
 /* indicador que viaja entre as abas: anima do valor atual, então é interrompível a qualquer instante */
-.tab-ind{position:absolute;left:0;top:0;width:0;height:0;border-radius:var(--r-pill);background:var(--amber);
- box-shadow:0 2px 10px rgba(216,163,64,.28);pointer-events:none;opacity:0;will-change:transform,width;
- transition:transform var(--t-sec) var(--ease),width var(--t-sec) var(--ease),opacity 200ms ease}
+.tab-ind{position:absolute;left:0;top:0;width:0;height:0;border-radius:var(--r-pill);
+ /* vidro âmbar, não âmbar sólido: o rótulo ativo continua CLARO (--amber2, 8.96:1 sobre a cápsula).
+    Com fundo sólido o texto teria de escurecer, e a cor e a chegada da pílula nunca sincronizam. */
+ background:rgba(216,163,64,.18);border:1px solid rgba(216,163,64,.42);
+ box-shadow:0 1px 10px rgba(216,163,64,.14);pointer-events:none;opacity:0;will-change:transform,width;
+ transition:transform var(--t-sec) var(--ease),width var(--t-sec) var(--ease),height var(--t-sec) var(--ease),opacity 200ms ease}
 nav.tabs button{position:relative;z-index:1;background:transparent;border:1px solid transparent;color:var(--dim);
- font-family:var(--sans);font-size:0.8438rem;padding:8px 14px;border-radius:var(--r-pill);cursor:pointer;
- transition:color var(--t-state) ease,background-color var(--t-state) ease,transform var(--t-press) var(--ease)}
+ font-family:var(--sans);font-size:0.8438rem;font-weight:500;letter-spacing:.008em;padding:8px 14px;
+ border-radius:var(--r-pill);cursor:pointer;
+ transition:color 120ms ease,background-color var(--t-state) ease,transform var(--t-press) var(--ease)}
 nav.tabs button:hover{color:var(--ink);background:rgba(255,255,255,.06)}
 nav.tabs button:active{transform:scale(.97)}
-nav.tabs button.active{background:var(--amber);color:#14100a;font-weight:600;border-color:transparent}
-/* com o indicador em cena (JS), o fundo da aba ativa vem do pill que viaja — o fallback acima vale sem JS */
-nav.tabs.ind-ok button.active{background:transparent}
+nav.tabs button.active{background:rgba(216,163,64,.18);border-color:rgba(216,163,64,.42);color:var(--amber2);font-weight:600}
+/* com o indicador em cena (JS), a cápsula é um único elemento que viaja; o estado acima é o fallback sem JS */
+nav.tabs.ind-ok button.active{background:transparent;border-color:transparent}
 main{padding:34px 40px 90px;max-width:1440px;margin:0 auto}
 section{display:none}
 section.on{display:block;animation:secIn var(--t-sec) var(--ease) both}
-section.on.reduz{animation:secFade 200ms ease both}
-@keyframes secIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+/* a entrada da seção aponta na direção do movimento entre as abas (--dir vem do JS), não sempre de baixo */
+@keyframes secIn{from{opacity:0;transform:translate(calc(var(--dir,1) * .6rem),.35rem)}to{opacity:1;transform:none}}
 @keyframes secFade{from{opacity:0}to{opacity:1}}
 h2.sec{font-family:var(--serif);font-size:1.6875rem;line-height:1.2;margin:0 0 6px;font-weight:600;
  letter-spacing:-.012em;text-wrap:balance}
@@ -101,20 +108,20 @@ nav.tabs button,.chip,.loc,.placebox a.btn{transition:color var(--t-state) ease,
 .toolbar{display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-bottom:16px}
 .count{font-family:var(--mono);font-size:0.75rem;color:var(--muted)}
 .day{margin:26px 0 0}
-.dayhead{position:sticky;top:59px;z-index:12;
- background:linear-gradient(90deg,rgba(10,12,17,.94) 68%,rgba(10,12,17,0));
+.dayhead{position:sticky;top:var(--navh,3.6875rem);z-index:12;   /* --navh é medido pelo JS: abas quebradas em 2 linhas deixavam o dia escondido atrás da barra */
+ background:linear-gradient(90deg,rgba(10,12,17,.96) 78%,rgba(10,12,17,0));
  backdrop-filter:blur(14px) saturate(160%);-webkit-backdrop-filter:blur(14px) saturate(160%);
  padding:7px 0;font-family:var(--mono);font-size:0.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--amber)}
 .rail{position:relative;border-left:1px solid var(--line);margin-left:7px;padding:6px 0 6px 0}
 .tl{display:grid;grid-template-columns:4rem 1fr;gap:14px;padding:9px 0 9px 18px;position:relative}
-.tl:before{content:"";position:absolute;left:-4.5px;top:16px;width:8px;height:8px;border-radius:50%;
+.tl:before{content:"";position:absolute;left:-4.5px;top:1rem;width:8px;height:8px;border-radius:50%;
  background:var(--panel3);border:1px solid var(--line)}
 .tl.v:before{background:var(--amber);border-color:var(--amber2)}
 .tl.o:before{background:#2b3546;border-color:#3d4a5e}
 .tl.ev:before{background:var(--blue);border-color:var(--blue);border-radius:2px;transform:rotate(45deg)}
 .tl.master:before{background:var(--purple);border-color:var(--purple);border-radius:2px;transform:rotate(45deg)}
 .tl.alerta:before{background:var(--red);border-color:var(--red);border-radius:2px;transform:rotate(45deg)}
-.tl.imprensa:before{background:#c9ccd3;border-color:#fff;border-radius:2px;transform:rotate(45deg)}
+.tl.imprensa:before{background:var(--press);border-color:#fff;border-radius:2px;transform:rotate(45deg)}
 .tl .h{font-family:var(--mono);font-size:0.75rem;color:var(--muted);padding-top:2px}
 .tl .b{min-width:0}
 .tl .who{font-size:0.75rem;font-family:var(--mono);color:var(--dim);margin-bottom:3px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
@@ -124,16 +131,17 @@ nav.tabs button,.chip,.loc,.placebox a.btn{transition:color var(--t-state) ease,
 .tl .obs,.mtt .obs{font-size:0.7188rem;color:var(--muted);margin-top:5px;font-style:italic;line-height:1.45}
 .tl.evrow .tx,.tl.master .tx,.tl.alerta .tx,.tl.imprensa .tx{font-family:var(--serif);font-size:0.9688rem;color:#dfe5ee}
 .tl .ett{display:block;font-family:var(--mono);font-size:0.6875rem;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:4px}
-.tl.master .ett{color:var(--purple)} .tl.alerta .ett{color:var(--red)} .tl.imprensa .ett{color:#c9ccd3}
+.tl.master .ett{color:var(--purple)} .tl.alerta .ett{color:var(--red)} .tl.imprensa .ett{color:var(--press)}
 .lg{font-weight:500}
-.lg-ev{color:var(--blue)}.lg-int{color:var(--amber)}.lg-pod{color:var(--red)}
-.lg-mas{color:var(--purple)}.lg-are{color:var(--neutral)}
+/* cor por categoria em CLASSE, nunca em style= inline: assim a camada de contraste alcança */
+.lg-ev,.tp-ev{color:var(--blue)}.lg-int,.tp-int{color:var(--amber)}.lg-pod,.tp-pod{color:var(--red)}
+.lg-mas,.tp-mas{color:var(--purple)}.lg-are,.tp-are{color:var(--neutral)}.tp-log{color:var(--ice)}
 .tagpill{font-family:var(--mono);font-size:0.6562rem;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid currentColor}
 /* ------------------------- organograma */
 .org{margin-top:8px}
 .root{max-width:620px;margin:0 auto;text-align:center;background:linear-gradient(180deg,#1c2330,#141922);
  border:1px solid var(--amber);border-radius:14px;padding:20px 24px;box-shadow:0 0 0 6px rgba(216,163,64,.05)}
-.root .rn{font-family:var(--serif);font-size:1.5rem;color:var(--amber2)}
+.root .rn{font-family:var(--serif);font-size:1.5rem;color:var(--amber2);line-height:1.15;letter-spacing:-.015em;text-wrap:balance}
 .root .rr{font-family:var(--mono);font-size:0.75rem;color:var(--dim);margin-top:6px}
 .root .rd{font-size:0.8438rem;color:var(--dim);margin-top:10px;line-height:1.6}
 .stem{width:2px;height:24px;background:var(--line);margin:0 auto}
@@ -152,9 +160,10 @@ nav.tabs button,.chip,.loc,.placebox a.btn{transition:color var(--t-state) ease,
 .pcard .pr{font-size:0.7188rem;font-family:var(--mono);color:var(--muted);margin-top:3px}
 .pcard .pt{font-size:0.8125rem;color:var(--dim);line-height:1.55;margin-top:8px}
 .pcard .pe{font-size:0.7812rem;color:#cbb37a;line-height:1.5;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
-.arena-head{margin:40px 0 4px;font-family:var(--serif);font-size:1.3125rem}
+.arena-head{margin:40px 0 4px;font-family:var(--serif);font-size:1.3125rem;line-height:1.25;
+ letter-spacing:-.012em;text-wrap:balance}
 .arena-sub{font-size:0.7812rem;color:var(--muted);margin-bottom:14px;max-width:900px;line-height:1.6}
-.arena-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.arena-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:12px}
 /* ------------------------- mapa */
 .mapwrap{display:grid;grid-template-columns:22rem 1fr;gap:20px;align-items:start}
 @media(max-width:940px){.mapwrap{grid-template-columns:1fr}}
@@ -165,24 +174,27 @@ nav.tabs button,.chip,.loc,.placebox a.btn{transition:color var(--t-state) ease,
 .loc{display:block;width:100%;text-align:left;background:var(--panel2);border:1px solid var(--line);border-radius:var(--r-md);
  padding:9px 12px;margin-bottom:7px;cursor:pointer;color:var(--dim);font-size:0.8125rem;font-family:var(--sans)}
 .loc:hover{border-color:var(--amber);color:var(--ink)}
+/* linha inteira: escala menor que a das pílulas — a superfície é grande e .97 saltaria aos olhos */
 .loc:active{transform:scale(.985)}
 .loc.on{background:rgba(216,163,64,.14);border-color:var(--amber);color:var(--amber2)}
 .loc small{display:block;font-family:var(--mono);font-size:0.6562rem;color:var(--muted);margin-top:3px}
 .mapframe iframe{width:100%;height:430px;border:1px solid var(--line);border-radius:var(--r-lg);background:#0e1219;display:block}
 .placebox{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px 20px;margin-top:14px;box-shadow:var(--sh-1)}
-.placebox .pt{font-family:var(--serif);font-size:1.1875rem;color:var(--ink)}
+.placebox .pt{font-family:var(--serif);font-size:1.1875rem;color:var(--ink);line-height:1.3;letter-spacing:-.008em;text-wrap:balance}
 .placebox .pe{font-family:var(--mono);font-size:0.75rem;color:var(--muted);margin-top:5px}
 .placebox .pp{font-size:0.875rem;color:var(--dim);line-height:1.65;margin-top:11px}
 .placebox a.btn{display:inline-block;margin-top:12px;font-family:var(--mono);font-size:0.75rem;border:1px solid var(--amber);
  color:var(--amber2);padding:7px 13px;border-radius:999px;text-decoration:none}
 .placebox a.btn:hover{background:rgba(216,163,64,.14)}
+.placebox a.btn:active{transform:scale(.97)}
 /* ------------------------- mensagens */
 .searchbar{display:flex;gap:10px;align-items:center;margin-bottom:18px;flex-wrap:wrap}
 .searchbar input{flex:1;min-width:240px;background:var(--panel2);border:1px solid var(--line);border-radius:var(--r-md);
  padding:11px 14px;color:var(--ink);font-size:0.875rem;font-family:var(--sans);
  transition:border-color var(--t-state) ease,box-shadow var(--t-state) ease}
-.searchbar input:focus{outline:none;border-color:var(--amber);box-shadow:0 0 0 3px rgba(216,163,64,.18)}
-.convs{display:grid;grid-template-columns:repeat(auto-fit,minmax(375px,1fr));gap:16px}
+.searchbar input:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(216,163,64,.18)}
+.searchbar input:focus:not(:focus-visible){outline:none}   /* o anel de :focus-visible fica para o teclado */
+.convs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(375px,100%),1fr));gap:16px}
 .conv{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--sh-1)}
 .conv header{padding:14px 16px;border-bottom:1px solid var(--line);background:var(--panel2)}
 .conv header .cn{font-size:0.9062rem;font-weight:600;color:var(--ink)}
@@ -202,37 +214,67 @@ table.desp td.o{font-size:0.7812rem;color:var(--muted)}
 table.desp tr:last-child td{border-bottom:none;color:var(--ink);font-weight:600}
 footer{border-top:1px solid var(--line);padding:26px 40px 60px;color:var(--muted);font-size:0.7812rem;line-height:1.8}
 footer a{color:var(--dim)}
-.meth{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:18px}
+.meth{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(310px,100%),1fr));gap:18px}
+/* ---------- telas estreitas: faixa de abas rolável (o flick nativo dá o limite) ---------- */
+@media (max-width:760px){
+ nav.tabs{flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;padding:10px 16px}
+ nav.tabs::-webkit-scrollbar{display:none}
+ nav.tabs button{flex:0 0 auto}
+}
+@media (max-width:640px){
+ header.top{padding:32px 18px 22px}
+ main{padding:26px 18px 70px}
+ footer{padding:22px 18px 50px}
+}
 /* ---------- acessibilidade: sinais independentes do sistema ---------- */
 @media (prefers-reduced-motion:reduce){
  html{scroll-behavior:auto}
- section.on{animation:secFade 200ms ease both}
- .tab-ind{transition:opacity 200ms ease}
+ section.on{animation:secFade 200ms ease both}   /* cross-fade no lugar do deslize */
+ .tab-ind{transition:opacity 200ms ease;will-change:auto}
  nav.tabs button:active,.chip:active,.loc:active,.placebox a.btn:active{transform:none}
- .tab-ind,nav.tabs button{will-change:auto}
+ a:not(.btn):active{opacity:1}
 }
 @media (prefers-reduced-transparency:reduce){
  nav.tabs{background:#0b0e14;backdrop-filter:none;-webkit-backdrop-filter:none}
- nav.tabs.scrolled{background:#0b0e14;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+ nav.tabs.scrolled{background:#0b0e14}   /* a sombra de elevação fica: ela não depende de transparência */
  .dayhead{background:#0a0c11;backdrop-filter:none;-webkit-backdrop-filter:none}
 }
 @media (prefers-contrast:more){
  :root{--line:#3b4759;--dim:#c6cfdd;--muted:#aeb9c9;--panel:#0f131a;--panel2:#141922;--panel3:#1a2130}
  nav.tabs{background:#080b10;backdrop-filter:none;-webkit-backdrop-filter:none;border-bottom-color:#4a566a}
  nav.tabs.scrolled{background:#080b10}
+ .tab-ind{background:rgba(216,163,64,.28);border-color:var(--amber)}
+ nav.tabs button.active,nav.tabs.ind-ok button.active{color:#ffd98a}
  .dayhead{background:#0a0c11;backdrop-filter:none;-webkit-backdrop-filter:none}
- .card,.pcard,.conv,.kpi,.maplist,.placebox,.searchbar input,.loc,.mapframe iframe{border-color:#4a566a}
+ .card,.conv,.kpi,.maplist,.placebox,.searchbar input,.loc,.mapframe iframe{border-color:#4a566a}
+ /* a ficha de pessoa mantém o acento lateral (o shorthand acima apagaria as 5 cores das frentes) */
+ .pcard{border-color:#4a566a;border-left-color:var(--pc,var(--neutral))}
+ /* rótulos de categoria sobem para AAA (>=10:1) sem perder o código cromático */
+ .tp-ev,.lg-ev{color:#a9ccff}.tp-int,.lg-int{color:#f5cf8a}.tp-pod,.lg-pod{color:#ffa8ba}
+ .tp-mas,.lg-mas{color:#cdbcff}.tp-are,.lg-are{color:#c6cfdd}.tp-log{color:#bcd7ee}
 }
 @media print{
  @page{size:A4 landscape;margin:12mm}
+ /* imprimir inverte os TOKENS: tudo que usa a paleta vira legível no papel, em vez de depender de
+    listas de seletores (o texto branco sobre papel branco media 1.16:1) */
+ :root{--bg:#fff;--panel:#fff;--panel2:#fff;--panel3:#f4f4f4;--line:#a8a8a8;
+  --ink:#000;--dim:#1c1c1c;--muted:#3a3a3a;--amber:#6d4c07;--amber2:#523806;
+  --blue:#123f7a;--ice:#1d4f73;--red:#7a1b2c;--purple:#432a75;--neutral:#3a3a3a;--green:#125c40;--press:#333;
+  --sh-1:none;--sh-2:none}
  body{background:#fff;color:#000}
  header.top,nav.tabs,.filters,.toolbar,.searchbar,footer,.mapframe iframe{background:#fff!important;color:#000}
  nav.tabs,.filters,.searchbar,.tab-ind{display:none!important}
  section{display:block!important;page-break-before:always}
- .card,.pcard,.conv,.kpi,.root{background:#fff!important;border:1px solid #000!important;color:#000!important}
- .tx,.pt,.pe,.pp,.rd,.rr,.ptxt,.pev{color:#000!important}
+ .card,.pcard,.conv,.kpi,.root,.maplist,.placebox,.m.o .mtt,.m.v .mtt,.chip,.loc,.searchbar input{
+  background:#fff!important;border:1px solid #000!important;color:#000!important;box-shadow:none!important}
+ .m.v .mtt,blockquote.nota,.dayhead{background:#f4f4f4!important}
+ .tx,.pt,.pe,.pp,.rd,.rr,.pn,.pr,.lead,.sub,.byline,.mt,.mtt,td,.kpi span,ul.clean li,p{color:#000!important}
+ .obs,.count,.loc small,.kpi i,.arena-sub,.org-col>.sub,.cr,.h{color:#2b2b2b!important}
+ .dayhead,.card h3,.maplist h5,.kpi b{color:var(--amber)!important}
+ .tagpill{color:var(--neutral)!important}
  .convs{grid-template-columns:1fr 1fr}
  .maplist{max-height:none;overflow:visible}
+ .tab-ind,.loc small{display:block}
 }
 </style>
 </head>
@@ -253,12 +295,12 @@ footer a{color:var(--dim)}
 
 <nav class="tabs" role="tablist" aria-label="Seções do dossiê">
   <span class="tab-ind" aria-hidden="true"></span>
-  <button data-sec="geral" class="active" role="tab" aria-selected="true">Visão geral</button>
-  <button data-sec="tempo">Linha do tempo</button>
-  <button data-sec="org">Organograma</button>
-  <button data-sec="mapa">Mapa dos locais</button>
-  <button data-sec="msgs">Mensagens por conversa</button>
-  <button data-sec="metodo">Método e fontes</button>
+  <button type="button" data-sec="geral" class="active" role="tab" aria-selected="true" aria-controls="s-geral">Visão geral</button>
+  <button type="button" data-sec="tempo" role="tab" aria-selected="false" aria-controls="s-tempo">Linha do tempo</button>
+  <button type="button" data-sec="org" role="tab" aria-selected="false" aria-controls="s-org">Organograma</button>
+  <button type="button" data-sec="mapa" role="tab" aria-selected="false" aria-controls="s-mapa">Mapa dos locais</button>
+  <button type="button" data-sec="msgs" role="tab" aria-selected="false" aria-controls="s-msgs">Mensagens por conversa</button>
+  <button type="button" data-sec="metodo" role="tab" aria-selected="false" aria-controls="s-metodo">Método e fontes</button>
 </nav>
 
 <main>
@@ -311,8 +353,8 @@ footer a{color:var(--dim)}
   <div class="filters" id="filters"></div>
   <div class="toolbar">
     <div class="filters">
-      <button class="chip on" id="tog-ctx">Incluir contexto</button>
-      <button class="chip" id="tog-min">Só mensagens sobre o ministro</button>
+      <button type="button" class="chip on" id="tog-ctx" aria-pressed="true">Incluir contexto</button>
+      <button type="button" class="chip" id="tog-min" aria-pressed="false">Só mensagens sobre o ministro</button>
     </div>
     <div class="count" id="tlcount"></div>
   </div>
@@ -363,7 +405,7 @@ footer a{color:var(--dim)}
   <h2 class="sec">Mensagens por conversa</h2>
   <p class="lead">As oito conversas do celular de Vorcaro que a reportagem reproduz, agrupadas como no aplicativo. Use a busca para achar uma palavra em todas elas. Datas e horas são as do aparelho.</p>
   <div class="searchbar">
-    <input id="q" type="search" placeholder="Buscar nas mensagens (ex.: ministro, chocolate, quarto, kassio, compulsório…) — atalho: /">
+    <input id="q" type="search" aria-label="Buscar nas mensagens" placeholder="Buscar nas mensagens (ex.: ministro, chocolate, quarto, kassio, compulsório…) — atalho: /">
     <span class="count" id="qcount"></span>
   </div>
   <div class="convs" id="convs"></div>
@@ -430,6 +472,8 @@ const ORG  = [{"t": "A equipe da casa — o tríplex “Leo”", "ic": "🏠", "
 const ARENA= {"t": "A arena institucional, a imprensa e a fiscalização", "ic": "🗂️", "sub": "Não estavam no tríplex, mas definem o peso do que aconteceu ali: o foro onde o caso do banco tramita, o tribunal da eleição, quem apreendeu o celular e quem publicou.", "p": [{"id": "pf", "n": "Polícia Federal", "r": "Origem das mensagens", "tag": "fiscal", "tagc": "#7f8ea3", "noite": "Apreendeu o celular de Vorcaro, origem das 125 mensagens publicadas pela piauí. Os diálogos publicados antes por Metrópoles e UOL saíram do mesmo aparelho, mas eram conjuntos menores, não as 125 mensagens.", "ev": "“todas elas obtidas em um celular de Vorcaro apreendido pela Polícia Federal”"}, {"id": "stf", "n": "Supremo Tribunal Federal", "r": "Foro do caso Master", "tag": "fiscal", "tagc": "#7f8ea3", "noite": "O processo por fraude bancária do Master tramita na própria corte. A defesa do banco pediu três vezes que ficasse com Nunes Marques. Até a publicação, o tribunal não tomou nenhuma providência sobre o caso.", "ev": "Caso Alcídia desempatado na 2ª Turma; sessão de 15/09/2026 sobre Moraes e o Master"}, {"id": "tse", "n": "TSE", "r": "Tribunal presidido pelo ministro", "tag": "fiscal", "tagc": "#7f8ea3", "noite": "Presidido por Nunes Marques, que alegou não querer contaminar sua posição de condutor da eleição — a eleição presidencial se avizinhava.", "ev": "Declaração na sessão do STF de 15/09/2026"}, {"id": "imprensa", "n": "Metrópoles · UOL · piauí", "r": "Imprensa", "tag": "fiscal", "tagc": "#7f8ea3", "noite": "Metrópoles (15/09/2026) publica os primeiros diálogos; UOL (13/10/2026) revela as cinco garotas e a mensagem a Rennó; a piauí (15/10/2026) reconstrói a noite com as 125 mensagens.", "ev": "Andreza Matais e André Shalders; Daniela Lima; Breno Pires, Ana Clara Costa e João Batista Jr."}, {"id": "mendonca", "n": "André Mendonça", "r": "Ministro do STF", "tag": "fiscal", "tagc": "#7f8ea3", "noite": "Nome em torno do qual se travou a disputa pelo relatório do caso Master: a defesa do banco preferia Nunes Marques, e contava-se com Nunes Marques para afastar Moraes.", "ev": "“com quem o ministro André Mendonça contava para afastar Moraes”"}, {"id": "moraes", "n": "Alexandre de Moraes", "r": "Ministro do STF", "tag": "fiscal", "tagc": "#7f8ea3", "noite": "Seu envolvimento com o banco Master era o tema da sessão do STF no mesmo dia em que os diálogos vieram a público.", "ev": "Sessão do STF de 15/09/2026"}, {"id": "cueva", "n": "Ricardo Villas Bôas Cueva", "r": "Relator do caso do canal “Exército do Lula”", "tag": "fiscal", "tagc": "#7f8ea3", "noite": "Nem o próprio relator sustentava a direção da decisão de Nunes Marques que derrubou o canal de WhatsApp da militância petista.", "ev": "Decisão “de ofício, ainda que não houvesse maioria de votos em plenário nessa direção”"}, {"id": "flavio", "n": "Flávio Bolsonaro", "r": "Candidato na eleição presidencial", "tag": "fiscal", "tagc": "#7f8ea3", "noite": "Candidato a quem a reportagem atribui decisões favoráveis do ministro que preside a eleição; foi seu pai quem indicou Nunes Marques para a corte.", "ev": "“cujo pai indicou o ministro para integrar a corte”"}]};
 const LOCS = [{"id": "triplex", "n": "Tríplex “Leo” — a casa da festa", "e": "Rua Leopoldo Couto de Magalhães Júnior, Itaim Bibi, São Paulo/SP", "cid": "São Paulo", "q": "Rua Leopoldo Couto de Magalhães Júnior, Itaim Bibi, São Paulo", "por": "O apartamento de Daniel Vorcaro onde ocorreu a noitada de 28/02/2025. “Leo” era o apelido do imóvel. O endereço foi enviado a Rayanna às 13h54: “Leopoldo [número e andar omitidos], itaim”."}, {"id": "fasano", "n": "Hotel Fasano São Paulo Itaim", "e": "Rua Pedroso Alvarenga, Itaim Bibi, São Paulo/SP (hotel do qual Vorcaro era sócio)", "cid": "São Paulo", "q": "Hotel Fasano São Paulo Itaim", "por": "Quarto no hotel do qual Vorcaro era sócio, pedido pelo desembargador Newton Ramos para a sexta e o sábado “pro KN”. A reportagem registra o pedido e não a reserva confirmada."}, {"id": "debetti", "n": "deBetti — casa de carnes", "e": "Rua Curumins, 11, Cidade Jardim, São Paulo/SP", "cid": "São Paulo", "q": "deBetti Rua Curumins 11 Cidade Jardim São Paulo", "por": "Onde o chef José Maria Meira gastou R$ 1.772 em carnes para o churrasco. A reportagem não indica a unidade — a deBetti tem mais de um endereço em São Paulo, então o pin é orientativo."}, {"id": "master", "n": "Sede do Banco Master", "e": "Av. Brigadeiro Faria Lima, 3477, Itaim Bibi, São Paulo/SP", "cid": "São Paulo", "q": "Avenida Brigadeiro Faria Lima 3477 Itaim Bibi São Paulo", "por": "Sede do banco cujo processo por fraude tramita no STF — e cuja crise de liquidez Vorcaro administrava por mensagem no meio da festa (compulsório de R$ 800 mi saltando para R$ 1,25 bi)."}, {"id": "consult", "n": "Consult Inteligência Tributária", "e": "Rua Araguari, 835, Vila Uberabinha, São Paulo/SP", "cid": "São Paulo", "q": "Rua Araguari 835 Vila Uberabinha São Paulo", "por": "Consultoria que recebeu R$ 6,6 milhões do Master, em catorze operações, no período da festa — e repassou R$ 282 mil a Kevin Marques, filho do ministro."}, {"id": "sapucai", "n": "Camarote Café de La Musique Alma Rio", "e": "Rua Marquês de Sapucaí, Santo Cristo, Rio de Janeiro/RJ", "cid": "Rio de Janeiro", "q": "Rua Marquês de Sapucaí Santo Cristo Rio de Janeiro", "por": "Onde Vorcaro estreou como anfitrião do Carnaval de 2025: fechou um andar inteiro ao custo de R$ 40 milhões, dias depois da festa íntima no tríplex."}, {"id": "parque", "n": "Parque Lage", "e": "Rua Jardim Botânico, 414, Rio de Janeiro/RJ", "cid": "Rio de Janeiro", "q": "Parque Lage Rio de Janeiro", "por": "Uma das celebrações de Carnaval bancadas por Vorcaro na temporada em que exibia seu poder econômico “então intacto”."}, {"id": "santa", "n": "Casarão em Santa Teresa", "e": "Santa Teresa, Rio de Janeiro/RJ", "cid": "Rio de Janeiro", "q": "Santa Teresa Rio de Janeiro", "por": "Outra das festas de Carnaval bancadas pelo banqueiro, citada junto ao Parque Lage e ao camarote da Sapucaí."}, {"id": "stf", "n": "Supremo Tribunal Federal", "e": "Praça dos Três Poderes, Brasília/DF", "cid": "Brasília", "q": "Supremo Tribunal Federal Praça dos Três Poderes Brasília", "por": "Foro do processo do Master e da sessão de 15/09/2026 sobre Moraes e o banco; na Segunda Turma, Nunes Marques desempatou o caso Alcídia."}, {"id": "tse", "n": "Tribunal Superior Eleitoral", "e": "Praça dos Tribunais Superiores, Brasília/DF", "cid": "Brasília", "q": "Tribunal Superior Eleitoral Brasília", "por": "Presidido por Nunes Marques, que usou o cargo para justificar não participar da votação sobre Moraes e o Master."}, {"id": "bacen", "n": "Banco Central", "e": "SBS Quadra 3, Bloco B, Brasília/DF", "cid": "Brasília", "q": "Banco Central do Brasil SBS Quadra 3 Brasília", "por": "O compulsório usado pelo Master para garantir liquidez em 28/02/2025 — R$ 800 milhões, depois R$ 1,25 bilhão — descumprindo requisitos mínimos de operação."}, {"id": "brb", "n": "BRB — Banco de Brasília", "e": "SBS Quadra 1, Bloco E, Brasília/DF", "cid": "Brasília", "q": "BRB Banco de Brasília sede Brasília", "por": "A operação com o banco estatal, que injetaria capital no Master, era a aposta de Vorcaro naquela sexta — e seria anunciada no mês seguinte."}, {"id": "bh", "n": "Belo Horizonte (o “Bh” de Rennó)", "e": "Belo Horizonte/MG", "cid": "Belo Horizonte", "q": "Belo Horizonte MG", "por": "De onde Luiz Rennó, ex-diretor jurídico do Master, respondeu “Bh” às 14h41 de 28/02 — acompanhando o escritório enquanto Vorcaro “fazia graça para ministro em SP”."}];
 const DESP = [{"i": "Casa de carnes deBetti (SP)", "v": "R$ 1.772,00", "o": "Carnes para o churrasco de 15 pessoas"}, {"i": "Cinco latas de caviar", "v": "R$ 15.100,00", "o": "Compradas em outro endereço, junto com trufas"}, {"i": "Total das compras do chef", "v": "R$ 21.121,90", "o": "Relatório de despesas enviado a Vorcaro em 27/02, 18h26"}, {"i": "Custo total estimado da noite", "v": "≈ R$ 27.000,00", "o": "Com a equipe recrutada (chef, mordomo, faxineira, motoristas, arquiteto)"}];
+/* categoria -> classe: a cor do rótulo deixa de ser style= inline */
+const TAGC={'#6ea8fe':'tp-ev','#d8a340':'tp-int','#e0617b':'tp-pod','#a78bfa':'tp-mas','#7f8ea3':'tp-are','#7fa6c9':'tp-log'};
 
 const WD=['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'];
 const MO=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
@@ -443,43 +487,69 @@ function hl(s,q){const e=esc(s);if(!q)return e;const rx=new RegExp('('+q.replace
 
 /* ---------- navegação ---------- */
 const SECS=['geral','tempo','org','mapa','msgs','metodo'];
-const REDUZ=!!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+const mqReduz=window.matchMedia?window.matchMedia('(prefers-reduced-motion: reduce)'):null;
+let REDUZ=!!(mqReduz&&mqReduz.matches);
+if(mqReduz&&mqReduz.addEventListener){mqReduz.addEventListener('change',e=>{REDUZ=e.matches;});}
 const TABBAR=document.querySelector('nav.tabs'), IND=document.querySelector('.tab-ind');
-document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('role','tab'));
+const TABS=[].slice.call(document.querySelectorAll('nav.tabs button'));
+TABS.forEach(b=>{b.setAttribute('role','tab');b.setAttribute('aria-controls','s-'+b.dataset.sec);
+  b.id='tab-'+b.dataset.sec;b.tabIndex=b.classList.contains('active')?0:-1;});
+SECS.forEach(s=>{const el=document.getElementById('s-'+s);if(!el)return;
+  el.setAttribute('role','tabpanel');el.setAttribute('aria-labelledby','tab-'+s);});
+document.addEventListener('touchstart',function(){},{passive:true});   // iOS só dispara :active com um listener de toque
 /* o indicador anima do valor atual: clicar de novo no meio do trajeto redireciona em vez de esperar */
-function moveInd(){
+let linhaInd=null;
+function moveInd(imediato){
   const b=TABBAR.querySelector('button.active');if(!IND||!b)return;
-  IND.style.width=b.offsetWidth+'px';IND.style.height=b.offsetHeight+'px';
-  IND.style.transform='translate('+b.offsetLeft+'px,'+b.offsetTop+'px)';IND.style.opacity='1';
-  TABBAR.classList.add('ind-ok');   // com o indicador posicionado, o fundo da aba ativa vem dele
+  const nb=TABBAR.getBoundingClientRect(), rb=b.getBoundingClientRect();
+  const dy=rb.top-nb.top;
+  /* trocou de linha (abas empilhadas): voar na diagonal não comunica nada — reposiciona e reacende */
+  const salto=(linhaInd!==null&&Math.abs(dy-linhaInd)>1);
+  if(imediato||salto){IND.style.transition='none';}
+  IND.style.width=rb.width+'px';IND.style.height=rb.height+'px';
+  IND.style.transform='translate('+(rb.left-nb.left)+'px,'+dy+'px)';IND.style.opacity='1';
+  TABBAR.classList.add('ind-ok');
+  document.documentElement.style.setProperty('--navh',Math.round(nb.height)+'px');
+  if(imediato||salto){IND.offsetWidth;IND.style.transition='';}   // reflow força o reposicionamento antes de reanimar
+  linhaInd=dy;
 }
 function go(id){
+  const atual=TABBAR.querySelector('button.active'), alvo=TABS[SECS.indexOf(id)];
+  if(!alvo)return;
+  const d=atual?SECS.indexOf(id)-SECS.indexOf(atual.dataset.sec):0;
+  document.documentElement.style.setProperty('--dir',d<0?-1:1);
   SECS.forEach(s=>{document.getElementById('s-'+s).classList.toggle('on',s===id);});
-  document.querySelectorAll('nav.tabs button').forEach(b=>{
-    const on=b.dataset.sec===id;b.classList.toggle('active',on);b.setAttribute('aria-selected',on?'true':'false');
-  });
+  TABS.forEach(b=>{const on=b.dataset.sec===id;b.classList.toggle('active',on);
+    b.setAttribute('aria-selected',on?'true':'false');b.tabIndex=on?0:-1;});
   moveInd();
   try{history.replaceState(null,'','#'+id);}catch(e){}
-  window.scrollTo({top:0,behavior:REDUZ?'auto':'smooth'});
+  window.scrollTo({top:0});   // a suavidade é do CSS (scroll-behavior), que já respeita reduced-motion
 }
-document.querySelectorAll('nav.tabs button').forEach(b=>b.addEventListener('click',()=>go(b.dataset.sec)));
+TABS.forEach(b=>b.addEventListener('click',()=>go(b.dataset.sec)));
 /* a espessura do material acompanha o conteúdo que passa por baixo da barra */
 window.addEventListener('scroll',()=>{TABBAR.classList.toggle('scrolled',window.scrollY>4);},{passive:true});
-window.addEventListener('resize',moveInd);
-try{moveInd();window.addEventListener('load',moveInd);
-  /* a fonte da web troca DEPOIS do primeiro layout: sem estes dois o pill fica deslocado uns 10px */
-  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(moveInd);}
-  if(window.ResizeObserver){new ResizeObserver(moveInd).observe(TABBAR);}
+window.addEventListener('resize',()=>moveInd(true));
+try{moveInd(true);window.addEventListener('load',()=>moveInd(true));
+  /* a fonte troca DEPOIS do primeiro layout e a largura do BOTÃO muda sem mexer no tamanho da barra:
+     por isso o observer olha cada botão, não só a barra */
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(()=>moveInd(true));}
+  if(window.ResizeObserver){const ro=new ResizeObserver(()=>moveInd(true));
+    ro.observe(TABBAR);TABS.forEach(b=>ro.observe(b));}
 }catch(e){}
 document.addEventListener('keydown',e=>{
-  if(e.key==='/'&&document.activeElement.id!=='q'){e.preventDefault();go('msgs');document.getElementById('q').focus();return;}
-  if(e.key==='Escape'){const q=document.getElementById('q');if(q.value){q.value='';renderConvs('');}}
-  if(/^[1-6]$/.test(e.key)&&document.activeElement.id!=='q'){go(SECS[+e.key-1]);}
+  const el=document.activeElement||{};
+  const digitando=/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName||'')||el.isContentEditable===true;
+  if(e.key==='/'&&!digitando){e.preventDefault();go('msgs');document.getElementById('q').focus();return;}
+  if(e.key==='Escape'){const q=document.getElementById('q');if(q.value){q.value='';renderConvs('');}return;}
+  if(e.metaKey||e.ctrlKey||e.altKey)return;
+  if(digitando)return;   // dentro do campo de busca as setas são do cursor, nunca das abas
+  if(/^[1-6]$/.test(e.key)){go(SECS[+e.key-1]);return;}
   if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
-    const cur=document.querySelector('nav.tabs button.active');
-    if(cur){e.preventDefault();const i=SECS.indexOf(cur.dataset.sec);
-      const j=(i+(e.key==='ArrowRight'?1:SECS.length-1))%SECS.length;
-      const nb=document.querySelectorAll('nav.tabs button')[j];go(nb.dataset.sec);nb.focus();}
+    const cur=document.querySelector('nav.tabs button.active');if(!cur)return;
+    e.preventDefault();
+    const i=SECS.indexOf(cur.dataset.sec);
+    const j=(i+(e.key==='ArrowRight'?1:SECS.length-1))%SECS.length;
+    const nb=document.querySelectorAll('nav.tabs button')[j];go(nb.dataset.sec);nb.focus();
   }
 });
 
@@ -499,15 +569,18 @@ let fConv='todos', fCtx=true, fMin=false;
 const RXMIN=/ministro|kassio|\bKN\b/i;   // mencao ao ministro no texto da mensagem
 document.getElementById('filters').innerHTML=
  '<span class="count" style="margin-right:4px">Interlocutor:</span>'+
- '<button class="chip on" data-c="todos">todas as conversas</button>'+
- Object.keys(CONV).map(k=>'<button class="chip" data-c="'+k+'">'+esc(CONV[k].n)+'</button>').join('');
+ '<button type="button" class="chip on" data-c="todos" aria-pressed="true">todas as conversas</button>'+
+ Object.keys(CONV).map(k=>'<button type="button" class="chip" data-c="'+k+'" aria-pressed="false">'+esc(CONV[k].n)+'</button>').join('');
 document.querySelectorAll('#filters .chip').forEach(c=>c.addEventListener('click',()=>{
   fConv=c.dataset.c;
-  document.querySelectorAll('#filters .chip').forEach(x=>x.classList.toggle('on',x===c));
+  document.querySelectorAll('#filters .chip').forEach(x=>{const on=x===c;
+    x.classList.toggle('on',on);x.setAttribute('aria-pressed',on?'true':'false');});
   renderTL();
 }));
-document.getElementById('tog-ctx').addEventListener('click',function(){fCtx=!fCtx;this.classList.toggle('on',fCtx);renderTL();});
-document.getElementById('tog-min').addEventListener('click',function(){fMin=!fMin;this.classList.toggle('on',fMin);renderTL();});
+document.getElementById('tog-ctx').addEventListener('click',function(){fCtx=!fCtx;this.classList.toggle('on',fCtx);
+  this.setAttribute('aria-pressed',fCtx?'true':'false');renderTL();});
+document.getElementById('tog-min').addEventListener('click',function(){fMin=!fMin;this.classList.toggle('on',fMin);
+  this.setAttribute('aria-pressed',fMin?'true':'false');renderTL();});
 
 function evRows(){
   const out=[];
@@ -564,7 +637,7 @@ document.getElementById('arena-s').textContent=ARENA.sub;
 document.getElementById('arenagrid').innerHTML=ARENA.p.map(p=>pcard(p)).join('');
 function pcard(p){
  return '<div class="pcard" style="--pc:'+p.tagc+'"><div class="pn"><span>'+esc(p.n)+'</span>'+
-  '<span class="tagpill" style="color:'+p.tagc+'">'+esc(p.tag)+'</span></div>'+
+  '<span class="tagpill '+(TAGC[p.tagc]||'tp-are')+'">'+esc(p.tag)+'</span></div>'+
   '<div class="pr">'+esc(p.r)+'</div><div class="pt">'+esc(p.noite)+'</div>'+
   '<div class="pe">📎 '+esc(p.ev)+'</div></div>';
 }
@@ -584,7 +657,8 @@ let curLoc=-1;
 })();
 function setLoc(i){
   curLoc=i;const l=LOCS[i];
-  document.querySelectorAll('.loc').forEach(b=>b.classList.toggle('on',+b.dataset.i===i));
+  document.querySelectorAll('.loc').forEach(b=>{const on=+b.dataset.i===i;
+    b.classList.toggle('on',on);b.setAttribute('aria-pressed',on?'true':'false');});
   document.getElementById('gmap').src='https://www.google.com/maps/embed?origin=mfe&pb=!1m3!2m1!1s'+encodeURIComponent(l.q)+'!6i15&hl=pt-BR';
   document.getElementById('plname').textContent=l.n;
   document.getElementById('plend').textContent=l.e;
@@ -606,7 +680,7 @@ function renderConvs(q){
     if(!shown.length)return '';
     return '<div class="conv"><header><div class="cn">'+esc(cv.n)+'</div>'+
       '<div class="cr">'+esc(cv.r)+' · '+esc(cv.g)+' · '+ms.length+' mensagens · '+range+'</div></header>'+
-      '<div class="msgs">'+shown.map(m=>{
+      '<div class="msgs" role="region" tabindex="0" aria-label="Mensagens da conversa com '+esc(cv.n)+'">'+shown.map(m=>{
         const dts=dshort(m.d)+' '+m.t;
         return '<div class="m '+(m.s==='V'?'v':'o')+(m.k==='f'?' f':'')+'"><div class="mt">'+
           (m.s==='V'?'Vorcaro':'')+' '+dts+'</div><div class="mtt">'+hl(m.x,q)+(m.o?'<div class="obs">↳ nota do painel: '+esc(m.o)+'</div>':'')+'</div></div>';
